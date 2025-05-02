@@ -1,17 +1,18 @@
 import GridItem from '@components/modules/grid/GridItem';
-import { Button, Stack } from '@mui/material';
-import { useEffect, useState,useRef } from 'react';
+import { Button, Stack, Chip } from '@mui/material';
+import { useEffect, useState, useRef } from 'react';
 import LoadingButton from '@components/modules/button/LoadingButton';
 
 function ListComponent({ data, list = [] }) {
   const [matchesArray, setMatchesArray] = useState([]);
   const useEffect_0001 = useRef(false);
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {  //process.env.NODE_ENV === 'development'
-      if (!useEffect_0001.current){
+    if (process.env.NODE_ENV === 'development') {
+      //process.env.NODE_ENV === 'development'
+      if (!useEffect_0001.current) {
         useEffect_0001.current = true;
-        return; 
-      } 
+        return;
+      }
     }
     const dataArray = data ?? [];
     if (list.length === 0 || dataArray.length === 0) return;
@@ -28,27 +29,27 @@ function ListComponent({ data, list = [] }) {
   }, []);
 
   if (matchesArray.length === 0) {
-    return (
-      <LoadingButton loadingPosition="center" loading />
-    );
+    return <LoadingButton loadingPosition="center" loading />;
   }
 
   return (
     <GridItem container divide={2}>
       {matchesArray.map((item) => (
-        <Stack key={item.id} direction="row" spacing={0.1} sx={{ padding: '5px' }}>
-          <Button
+        <Stack key={item.id} direction="row" spacing={0.1} sx={{ paddingRight: '5px' }}>
+          {/* Button 대신 Chip 으로 바꾸기 */}
+          {/* <Button
             variant="contained"
-            color="primary"
+            color="info"
             sx={{
-              backgroundColor: '#63a3c6',
+              // backgroundColor: '#63a3c6',
               maxHeight: '25px',
               pointerEvents: 'none', // 클릭 방지
               textTransform: 'none', // 대문자 변환 방지
             }}
           >
             {item.name}
-          </Button>
+          </Button> */}
+          <Chip variant="light" color="success" size="small" label={item.name} />
         </Stack>
       ))}
     </GridItem>

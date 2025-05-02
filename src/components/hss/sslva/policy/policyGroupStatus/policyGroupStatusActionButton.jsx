@@ -40,28 +40,33 @@ function PolicyGroupStatusActionButton(props) {
 
   return (
     <>
-      <GridItem item directionHorizon="end">
-        <Stack direction="row" alignItems="center" spacing={1.25}>
-          <ButtonSet
-            options={[
-              {
-                label: '조회',
-                callBack: () => inquiryClickButton(),
-                variant: 'outlined',
-              },
-              {
-                label: '추가',
-                callBack: handleInsertButtonClick,
-                variant: 'outlined',
-              },
-              {
-                label: '삭제',
-                callBack: onDeleteButtonClick,
-                variant: 'outlined',
-              },
-            ]}
-          />
-        </Stack>
+      <GridItem item directionHorizon="space-between">
+        <ButtonSet
+          options={[
+            {
+              label: '추가',
+              callBack: handleInsertButtonClick,
+              color: 'primary',
+              variant: 'contained',
+            },
+            {
+              label: '삭제',
+              callBack: onDeleteButtonClick,
+              color: 'secondary',
+              variant: 'contained',
+            },
+          ]}
+        />
+        <ButtonSet
+          options={[
+            {
+              label: '조회',
+              callBack: () => inquiryClickButton(),
+              color: 'primary',
+              variant: 'contained',
+            },
+          ]}
+        />
       </GridItem>
       {modalOpen && (
         <PolicyGroupStatusModal

@@ -13,6 +13,10 @@ const ReactRow = ({ row, children, theme, id, ...rest }) => {
       {...rest}
       {...otherRowProps}
       sx={{
+        height: 40,
+        '& td': {
+          height: 40,
+        },
         bgcolor: row.isSelected ? theme.palette.primary.lighter : 'inherit',
         '&.MuiTableRow-root:hover': {
           '& .MuiTableCell-root': {
@@ -26,10 +30,10 @@ const ReactRow = ({ row, children, theme, id, ...rest }) => {
                 ? theme.palette.primary.lighter
                 : '#1E1E1E'
               : row.isSelected
-              ? theme.palette.primary.lighter
-              : theme.palette.common.white,
+                ? theme.palette.primary.lighter
+                : theme.palette.common.white,
         },
-        height: id !== 'PermissionForm' && (rest?.height ? rest.height : 40),
+        // height: id !== 'PermissionForm' && (rest?.height ? rest.height : 40),
         // style 병합
         ...style,
         ...(rest?.style || {}),

@@ -1,0 +1,53 @@
+
+다시 설치 방법.
+1. .next 삭제
+2. node_modules 삭제
+3. package-lock.json 삭제
+4. package.json에서 "dependencies:{  <-- 패키지 내용 삭제 --> }"
+5. package.json에서 
+
+6. 이후 아래 패키지 설치
+
+
+npm i react@18 react-dom@18
+npm i next next-auth next-redux-wrapper
+npm i react-google-recaptcha html-react-parser
+npm i react-device-detect react-draggable react-dropzone 
+npm i react-grid-layout react-hook-form react-imask 
+npm i react-intl react-qr-code react-redux react-selectable 
+npm i react-sizeme react-table-sticky react-virtuoso react-table
+npm i @base-ui-components/react 
+npm i @mui/material
+npm i @mui/x-date-pickers
+npm i @mui/icons-material  @mui/material @mui/styles 
+npm i @mui/x-data-grid @mui/x-date-pickers @mui/x-tree-view 
+npm i @emotion/react @emotion/styled 
+npm i @ant-design/icons
+npm i @amcharts/amcharts4 @amcharts/amcharts5 
+npm i @cyntler/react-doc-viewer @fullcalendar/common @fullcalendar/core @fullcalendar/daygrid @fullcalendar/interaction @fullcalendar/list @fullcalendar/react @fullcalendar/resource-daygrid @fullcalendar/resource-timegrid @fullcalendar/resource-timeline @fullcalendar/timegrid @fullcalendar/timeline
+npm i axios crypto-js date-fns event-source-polyfill file-saver framer-motion jspdf jspdf-autotable jwt-decode lodash moment
+npm i node-forge
+npm i overlayscrollbars overlayscrollbars-react
+npm i primeicons primereact prop-types
+npm i simplebar-react 
+npm i styled-components
+npm i swr
+npm i dayjs
+npm i redux redux-persist  redux-saga @reduxjs/toolkit 
+npm i @ant-design/icons @ant-design/icons-svg rc-util
+npm i @hello-pangea/dnd
+
+npm i -D @next/bundle-analyzer cross-env eslint eslint-config-next eslint-config-prettier eslint-import-resolver-jsconfig eslint-plugin-prettier eslint-plugin-security file-loader prettier
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#npm i @mui/lab
+#npm i react-simple-captcha
+#npm i react-copy-to-clipboard react-spring react-table
+
+
+
+
+

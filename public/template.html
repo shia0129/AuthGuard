@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HSS - 접근 차단됨</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --main-bg: #00574f;
+        --accent-color: #dc3545;
+        --accent-hover: #bd2130;
+        --accent-border: #c82333;
+        --text-light: #eeeeee;
+        --text-dark: #333333;
+        --card-bg: #ffffff;
+      }
+
+      body {
+        background-color: var(--main-bg);
+        color: var(--text-dark);
+        font-family: 'Inter', 'Noto Sans', sans-serif;
+        padding: 2vw;
+        font-size: clamp(14px, 1.2vw, 18px);
+      }
+
+      .card {
+        padding: 2rem 2rem;
+        margin-top: 3rem;
+        border-radius: 1rem;
+        background-color: var(--card-bg);
+        box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.1);
+      }
+
+      .container {
+        max-width: 560px;
+        margin: auto;
+      }
+
+      .access-image {
+        width: clamp(120px, 20vw, 200px);
+        height: auto;
+        display: block;
+        margin: 0 auto 1.5rem;
+      }
+
+      .section-title {
+        font-weight: 700;
+        color: var(--text-dark);
+        /* color: var(--accent-color); */
+        font-size: clamp(20px, 2vw, 28px);
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+
+      h2 {
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--accent-color);
+        text-align: center;
+      }
+
+      .btn {
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        width: 100%;
+        font-size: clamp(14px, 1.2vw, 16px);
+        transition: all 0.2s ease-in-out;
+      }
+
+      .btn-access {
+        background-color: var(--accent-color);
+        border-color: var(--accent-border);
+        color: #ffffff;
+      }
+
+      .btn-access:hover,
+      .btn-access:focus,
+      .btn-access:active {
+        background-color: var(--accent-hover) !important;
+        border-color: var(--accent-border) !important;
+        color: #ffffff !important;
+        box-shadow: none !important;
+      }
+
+      .btn-back {
+        background-color: #6c757d;
+        border-color: #5a6268;
+        color: #ffffff;
+      }
+
+      .btn-back:hover,
+      .btn-back:focus,
+      .btn-back:active {
+        background-color: #5a6268 !important;
+        border-color: #4e555b !important;
+        color: #ffffff !important;
+        box-shadow: none !important;
+      }
+
+      .btn[disabled] {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .btn-access:active {
+        background-color: var(--accent-hover) !important;
+      }
+
+      .btn-access:disabled {
+        background-color: var(--accent-color) !important;
+        border-color: var(--accent-border) !important;
+        color: #ffffff !important;
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .btn-access + .btn-back {
+        margin-top: 1rem;
+      }
+
+      .spinner {
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid #ffffff;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        vertical-align: middle;
+        margin-left: 8px;
+      }
+
+      .access-image {
+        margin-bottom: 2rem;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .form-control {
+        font-size: 1rem;
+      }
+
+      textarea.form-control {
+        resize: none;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      @media (max-height: 400px) {
+        body {
+          padding-top: 0 !important;
+        }
+
+        .container {
+          padding-top: 0 !important;
+          margin-top: 0 !important;
+        }
+
+        .access-image {
+          margin-top: 0 !important;
+          margin-bottom: 1rem;
+        }
+
+        .card,
+        .btn,
+        .hidden-on-small {
+          display: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- UI 1 -->
+    <div id="ui-1" class="box">
+      <div class="container">
+        <img src="" class="access-image mb-4" id="logo1" alt="Access Request" />
+        <div class="card p-4">
+          <h2 class="section-title hidden-on-small mb-3">⚠️ 접근이 차단되었습니다.</h2>
+          <p class="hidden-on-small mb-3 text-center">
+            해당 웹사이트는 보안 정책에 의해 차단되었습니다.
+          </p>
+          <p class="hidden-on-small mb-2 text-center">
+            <strong>차단 사유:</strong><br />
+            <span class="text-danger" style="font-weight: bold">-REASONGIVEN-</span>
+          </p>
+          <p class="hidden-on-small mb-4 text-center">
+            그룹: <strong>-FILTERGROUP-</strong>&nbsp;&nbsp;&nbsp;IP:
+            <strong>-IP-</strong>
+          </p>
+          <div class="d-grid">
+            <button class="btn btn-access" onclick="goToAccessPage()">접근 허용 요청하기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UI 2 -->
+    <div id="ui-2" class="box hidden">
+      <div class="container">
+        <img src="" class="access-image" id="logo2" alt="Access Request" />
+        <div class="card">
+          <h2 class="section-title hidden-on-small">🔓 접근 허용 요청</h2>
+          <div class="mb-3 text-start">
+            <label for="inputName" class="form-label">이름</label>
+            <input
+              type="text"
+              id="inputName"
+              class="form-control"
+              placeholder="이름을 입력하세요"
+            />
+          </div>
+          <div class="mb-3 text-start">
+            <label for="inputUrl" class="form-label">접근 요청 사이트</label>
+            <textarea id="inputUrl" class="form-control" rows="2" readonly>-URL-</textarea>
+          </div>
+          <div class="mb-3 text-start">
+            <label for="inputReason" class="form-label">사유</label>
+            <textarea
+              id="inputReason"
+              class="form-control"
+              rows="4"
+              placeholder="사유를 입력해주세요"
+            ></textarea>
+          </div>
+          <input type="hidden" id="inputTargetUrl" value="-URL-" />
+          <input type="hidden" id="inputClientIp" value="-IP-" />
+          <button class="btn btn-access" id="submitBtn" onclick="submitRequest()">전송</button>
+          <button class="btn btn-back" onclick="goBackToWarning()">이전 화면으로 돌아가기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- UI 3 -->
+    <div id="ui-3" class="box hidden">
+      <div class="container">
+        <img src="" class="access-image mb-4" id="logo3" alt="Access Request" />
+        <div class="card p-4 text-center">
+          <h2 class="section-title hidden-on-small mb-3">✅ 접근 요청 완료</h2>
+          <p class="mb-4">
+            정상적으로 요청이 전송되었습니다.<br />
+            관리자의 승인을 기다려 주세요.
+          </p>
+          <div class="d-grid">
+            <button class="btn btn-access" onclick="goToStartPage()">처음으로 돌아가기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const base64Logo =
+        'data:image/png;base64,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'; // base64 -w 0 int4_png3.png;
+      document.getElementById('logo1').src = base64Logo;
+      document.getElementById('logo2').src = base64Logo;
+      document.getElementById('logo3').src = base64Logo;
+
+      function getQueryParam(name) {
+        return new URLSearchParams(window.location.search).get(name) || '';
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        // 기존 코드 유지 + 파라미터 삽입
+        document.body.innerHTML = document.body.innerHTML
+          .replace(/-IP-/g, getQueryParam('ip'))
+          .replace(/-REASONGIVEN-/g, getQueryParam('reason'))
+          .replace(/-FILTERGROUP-/g, getQueryParam('group'))
+          .replace(/-URL-/g, getQueryParam('url'));
+      });
+
+      window.addEventListener('DOMContentLoaded', () => {
+        // 로딩할 때 창 크기 체크
+        const isSmallScreen = window.innerHeight <= 400;
+        const targetUrl = document.getElementById('inputTargetUrl')?.value;
+
+        if (isSmallScreen && targetUrl) {
+          document.body.addEventListener('click', () => {
+            window.open(targetUrl, '_blank');
+          });
+        }
+      });
+
+      function showOnly(id) {
+        document.querySelectorAll('.box').forEach((el) => el.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+      }
+
+      function goToAccessPage() {
+        showOnly('ui-2');
+      }
+
+      function goBackToWarning() {
+        showOnly('ui-1');
+      }
+
+      function goToStartPage() {
+        showOnly('ui-1');
+      }
+
+      function sanitizeInputWithAlert(value, fieldName = '입력값') {
+        const disallowedRegex = /[^ㄱ-ㅎ가-힣a-zA-Z0-9 .,\-()_\[\]!?\n\r]/g;
+        if (disallowedRegex.test(value)) {
+          alert(`${fieldName}에 허용되지 않은 특수문자가 포함되어 있습니다.`);
+          return null;
+        }
+        return value;
+      }
+
+      function submitRequest() {
+        const nameInput = document.getElementById('inputName');
+        const urlInput = document.getElementById('inputUrl');
+        const reasonInput = document.getElementById('inputReason');
+        const ip = document.getElementById('inputClientIp').value;
+        const submitBtn = document.getElementById('submitBtn');
+
+        let name = nameInput.value.trim();
+        let url = urlInput.value.trim();
+        let reason = reasonInput.value.trim();
+
+        if (!name || !url || !reason) {
+          return alert('모든 항목을 입력해 주세요.');
+        }
+        if (name.length > 255) {
+          return alert('이름은 255자 이하로 입력해주세요.');
+        }
+        if (reason.length > 1024) {
+          return alert('사유는 1024자 이하로 입력해주세요.');
+        }
+
+        name = sanitizeInputWithAlert(name, '이름');
+        reason = sanitizeInputWithAlert(reason, '사유');
+        if (name === null || reason === null) {
+          return;
+        }
+
+        const payload = {
+          run_type: 'add',
+          name,
+          url,
+          reason,
+          ip,
+        };
+        const apiHost = window.location.origin; // '%%API_HOST%%';
+        const apiUrl = apiHost + '/api/sslswg/access-request/public';
+
+        submitBtn.disabled = true;
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = `전송 중 <span class="spinner"></span>`;
+
+        fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+          .then((res) => {
+            if (!res.ok) {
+              console.error('서버 응답 오류:', res.status, res.statusText);
+              throw new Error('서버 응답 실패');
+            }
+            return res.json();
+          })
+          .then((data) => {
+            if (data.errorYn === false && data.data?.count === 1) {
+              nameInput.value = '';
+              reasonInput.value = '';
+              showOnly('ui-3');
+            } else {
+              alert('요청 전송에 실패했습니다.');
+            }
+          })
+          .catch((err) => {
+            console.error('네트워크 오류:', err.message);
+            alert('서버 응답 실패');
+          })
+          .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+          });
+      }
+    </script>
+  </body>
+</html>

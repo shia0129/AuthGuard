@@ -1,0 +1,96 @@
+src\components\hss\sslswg\policy\policyDefaultManage\blackListGroupStatus\blackListGroupStatusSearchForm.jsx
+src\components\hss\sslswg\policy\policyDefaultManage\blackListStatus\blackListStatusSearchForm.jsx
+src\components\hss\sslswg\policy\policyDefaultManage\blackListStatus\index.jsx
+src\components\hss\sslswg\policy\policyDetailManage\patternGroupStatus\patternGroupStatusSearchForm.jsx
+src\components\hss\sslswg\policy\policyDetailManage\patternGroupStatus\patternGroupStatusTable.jsx
+src\components\hss\sslswg\policy\policyDetailManage\patternGroupStatus\update\index.jsx
+src\components\hss\sslswg\policy\policyDetailManage\patternStatus\patternStatusSearchForm.jsx
+src\components\hss\sslswg\policy\policyDetailManage\patternStatus\patternStatusTable.jsx
+src\components\hss\sslswg\policy\policyDetailManage\siteGroupStatus\siteGroupStatusSearchForm.jsx
+src\components\hss\sslswg\policy\policyDetailManage\siteGroupStatus\siteGroupStatusTable.jsx
+src\components\hss\sslswg\policy\policyDetailManage\siteGroupStatus\update\index.jsx
+src\components\hss\sslswg\policy\policyDetailManage\siteStatus\siteStatusSearchForm.jsx
+src\components\hss\sslswg\policy\policyDetailManage\siteStatus\siteStatusTable.jsx
+src\components\hss\sslswg\policy\policyDetailManage\srcIpGroupStatus\update\index.jsx
+src\components\hss\sslswg\policy\policyDetailManage\timeGroupStatus\timeGroupStatusSearchForm.jsx
+src\components\hss\sslswg\policy\policyDetailManage\timeGroupStatus\update\index.jsx
+src\components\hss\sslswg\policy\policyDetailManage\timeStatus\timeStatusSearchForm.jsx
+src\components\hss\sslswg\policy\policyGroupStatus\index.jsx
+src\components\hss\sslswg\policy\policyGroupStatus\policyGroupStatusActionButton.jsx
+src\components\hss\sslswg\policy\policyGroupStatus\policyGroupStatusSearchForm.jsx
+src\components\hss\sslswg\policy\policyGroupStatus\policyGroupStatusTable.jsx
+src\components\hss\sslswg\policy\policyGroupStatus\update\index.jsx
+src\components\hss\sslswg\policy\policyGroupStatus\update\policyGroupUpdateStatusActionButton.jsx
+src\components\hss\sslswg\policy\policyGroupStatus\update\policyGroupUpdateStatusSearchForm.jsx
+src\components\hss\sslswg\policy\policyGroupStatus\update\policyGroupUpdateStatusTable.jsx
+src\components\hss\sslva\log\index.jsx
+src\components\hss\sslva\policy\policyDetailStatus\index.jsx
+src\components\hss\sslva\policy\policyDetailStatus\policyDetailStatusSearchForm.jsx
+src\components\hss\sslva\policy\policyDetailStatus\policyDetailStatusTable.jsx
+src\components\hss\sslva\policy\policyGroupStatus\policyGroupStatusTable.jsx
+src\components\hss\sslva\policy\protocolStatus\index.jsx
+src\components\hss\sslva\policy\protocolStatus\protocolStatusSearchForm.jsx
+src\components\hss\sslva\policy\protocolStatus\protocolStatusTable.jsx
+
+미수정 == src\components\layouts\MainLayout\Drawer\DrawerContent\Navigation\NavItem.jsx
+미수정 == src\components\layouts\MainLayout\Drawer\DrawerHeader\index.jsx
+미수정 == src\components\modal\hss\common\networkManage\interfaceModal.jsx
+
+src\components\modal\hss\sslswg\policy\patternGroupStatusModal.jsx
+src\components\modal\hss\sslswg\policy\patternStatusModal.jsx
+src\components\modal\hss\sslswg\policy\policyDetailUpdateStatusModal.jsx
+src\components\modal\hss\sslswg\policy\policyGroupStatusModal.jsx
+src\components\modal\hss\sslswg\policy\siteGroupStatusModal.jsx
+src\components\modal\hss\sslswg\policy\siteStatusModal.jsx
+src\components\modal\hss\sslswg\policy\srcIpStatusModal.jsx
+src\components\modal\hss\sslswg\policy\timeGroupStatusModal.jsx
+src\components\modal\hss\sslswg\policy\timeStatusModal.jsx
+src\components\modal\hss\sslva\policy\policyDetailStatusModal.jsx
+src\components\modal\hss\sslva\policy\protocolStatusModal.jsx
+src\components\modal\quick\QuickMenuItem.jsx
+
+미수정 == src\components\modules\button\LoadingButton.jsx
+미수정 == src\components\modules\common\Alert.jsx
+미수정 == src\components\modules\common\ConfirmAlert.jsx
+미수정 == src\components\modules\common\CustomModal.jsx
+미수정 == src\components\modules\common\PopUp.jsx
+src\components\modules\input\LabelInput.jsx
+src\components\modules\select\multipleSelect.jsx
+
+미수정 == src\components\modules\table\HsReactTable\index.jsx
+미수정 == src\components\modules\table\HsReactTable\RowContent.jsx
+미수정 == src\components\modules\table\HsReactTable\TableHeader.jsx
+미수정 == src\components\modules\table\HsReactTable\TableHeaders.jsx
+미수정 == src\components\modules\table\MiniTable\index.jsx
+미수정 == src\components\modules\table\ReactRow.jsx
+미수정 == src\components\modules\table\ReactTable.jsx
+미수정 == src\components\third-party\react-hook-form\ValidateInput.jsx
+미수정 == src\modules\common\HsLib.js
+미수정 == src\modules\utils\route-guard\PermissionGuard.js
+미수정 == src\pages\_app.jsx
+미수정 == src\pages\hss\networkManage\interfaceManage\index.jsx
+
+src\pages\hss\sslswgManage\policyDetailManage\srcIpManage\index.jsx
+미수정 == src\pages\hss\sslvpnManage\userManage\index.jsx
+미수정 == src\pages\hss\systemManage\dashboardManage\index.jsx
+미수정 == src\pages\system\menu\menuList.jsx
+미수정 == src\pages\system\permission\permissionList.jsx
+미수정 == src\sub_pages\sample\kanban\Columns.jsx
+미수정 == src\sub_pages\sample\kanban\Items.jsx
+
+
+----------------------------------------------------------------------------
+문제있는 파일 
+- src\components\hss\sslswg\policy\policyDefaultManage\blackListStatus\index.jsx
+- src\components\hss\sslswg\policy\policyDetailManage\patternGroupStatus\index.jsx
+   ==> Error: Maximum update depth exceeded. This can happen when a component repeatedly calls setState inside componentWillUpdate or componentDidUpdate. React limits the number of nested updates to prevent infinite loops.
+- src\pages\hss\sslswgManage\policyDetailManage\siteManage\index.jsx
+   ==>Blocked aria-hidden on an element because its descendant retained focus. The focus must not be hidden from assistive technology users. Avoid using aria-hidden on a focused element or its ancestor. Consider using the inert attribute instead, which will also prevent focus. For more details, see the aria-hidden section of the WAI-ARIA specification at https://w3c.github.io/aria/#aria-hidden.
+        Element with focus: button
+        Ancestor with aria-hidden:  
+
+
+
+
+
+

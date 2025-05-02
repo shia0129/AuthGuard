@@ -1,0 +1,1487 @@
+import Layout from '@components/layouts';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import GridItem from '@components/modules/grid/GridItem';
+import MainCard from '@components/mantis/MainCard';
+import { Box, CircularProgress, Stack, Typography } from '@mui/material';
+import LinearProgress from '@mui/material/LinearProgress';
+// Icon
+import { TeamOutlined, UsergroupDeleteOutlined } from '@ant-design/icons';
+
+import dynamic from 'next/dynamic';
+import MiniTable from '@components/modules/table/MiniTable';
+import { styled } from '@mui/styles';
+import {
+  CancelPresentationOutlined,
+  FullscreenExitOutlined,
+  FullscreenOutlined,
+  ReportOffOutlined,
+  RouterOutlined,
+} from '@mui/icons-material';
+import accessMonApi from '@api/monitoring/accessMonApi';
+import { AuthInstance } from '@modules/axios';
+import useApi from '@modules/hooks/useApi';
+import { unstable_batchedUpdates } from 'react-dom';
+import RdpViewer from '@components/monitoring/RdpViewer';
+import TerminalViewer from '@components/monitoring/TerminalViewer';
+import ViewerScrollableContainer from '@components/monitoring/ViewerScrollableContainer';
+import UserConnStatModal from './popup/userConnStatModal';
+import UserNormalStatModal from './popup/userNormalStatModal';
+import UserLockStatModal from './popup/userLockStatModal';
+import ProtocolStatModal from './popup/protocolStatModal';
+import ViolationStatModal from './popup/violationStatModal';
+import { useIntl } from 'react-intl';
+
+const RowBarChart = dynamic(() => import('@components/third-party/am-chart/5/RowBarChart'), {
+  ssr: false,
+});
+
+const BarLineChart = dynamic(() => import('@components/third-party/am-chart/5/BarAndLineChart'), {
+  ssr: false,
+});
+
+const DonutChart = dynamic(() => import('@components/third-party/am-chart/5/DonutChart'), {
+  ssr: false,
+});
+
+const emptyTopUserData = [
+  {
+    userName: 'showChartDummy',
+    count: 1,
+  },
+];
+
+const emptyTopSystemData = [
+  {
+    pfNm: 'showChartDummy',
+    count: 1,
+  },
+];
+
+const emptyProtocol24Data = [
+  {
+    hour: '00',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '01',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '02',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '03',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '04',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '05',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '06',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '07',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '08',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '09',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '10',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '11',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '12',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '13',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '14',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '15',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '16',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '17',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '18',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '19',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '20',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '21',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '22',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+  {
+    hour: '23',
+    ssh: 0,
+    sftp: 0,
+    telnet: 0,
+    ftp: 0,
+    rdp: 0,
+    average: 0,
+  },
+];
+
+const DashboardMainCard = styled(MainCard)({
+  background: 'rgba(0,0,0,0.3)',
+  borderRadius: '10px',
+  border: 0,
+  color: 'rgba(255,255,255,0.5)',
+});
+
+function AccessDashboardPopup({ fullscreenFlag, renderFlag, setRenderFlag }) {
+  const intl = useIntl();
+  accessMonApi.axios = AuthInstance();
+
+  const accessUserTableDataTemplate = [
+    {
+      rank: intl.formatMessage({ id: 'monitoring.monitoring-access-rank-1' }),
+      userPart: '-',
+      deptNm: '-',
+      userName: '-',
+      count: '-',
+    },
+    {
+      rank: intl.formatMessage({ id: 'monitoring.monitoring-access-rank-2' }),
+      userPart: '-',
+      deptNm: '-',
+      userName: '-',
+      count: '-',
+    },
+    {
+      rank: intl.formatMessage({ id: 'monitoring.monitoring-access-rank-3' }),
+      userPart: '-',
+      deptNm: '-',
+      userName: '-',
+      count: '-',
+    },
+  ];
+
+  const accessSystemTableDataTemplate = [
+    {
+      rank: intl.formatMessage({ id: 'monitoring.monitoring-access-rank-1' }),
+      pfNm: '-',
+      ipAddr: '-',
+      pfTypeNm: '-',
+      count: '-',
+    },
+    {
+      rank: intl.formatMessage({ id: 'monitoring.monitoring-access-rank-2' }),
+      pfNm: '-',
+      ipAddr: '-',
+      pfTypeNm: '-',
+      count: '-',
+    },
+    {
+      rank: intl.formatMessage({ id: 'monitoring.monitoring-access-rank-3' }),
+      pfNm: '-',
+      ipAddr: '-',
+      pfTypeNm: '-',
+      count: '-',
+    },
+  ];
+
+  const [apiCall] = useApi();
+
+  const monitorRef = useRef(null);
+  const isVisible = useRef(false);
+
+  const [monitoringData, setMonitoringData] = useState(null);
+
+  const [protocolChartData, setProtocolChartData] = useState([]);
+  const [protocol24ChartData, setProtocol24ChartData] = useState([]);
+  const [accessUserChartData, setAccessUserChartData] = useState([]);
+  const [accessSystemChartData, setAccessSystemChartData] = useState([]);
+
+  const [accessUserTableData, setAccessUserTableData] = useState([...accessUserTableDataTemplate]);
+  const [accessSystemTableData, setAccessSystemTableData] = useState([
+    ...accessSystemTableDataTemplate,
+  ]);
+
+  const [protocolChart, setProtocolChart] = useState(null);
+  const [protocol24Chart, setProtocol24Chart] = useState(null);
+  const [accessUserChart, setAccessUserChart] = useState(null);
+  const [accessSystemChart, setAccessSystemChart] = useState(null);
+
+  const [userConnStatOpen, setUserConnStatOpen] = useState(false);
+  const [userNormalStatOpen, setUserNormalStatOpen] = useState(false);
+  const [userLockStatOpen, setUserLockStatOpen] = useState(false);
+  const [protocolStatOpen, setProtocolStatOpen] = useState(false);
+  const [violationStatOpen, setViolationStatOpen] = useState(false);
+  const [pfPtl, setPfPtl] = useState(null);
+  const [eventCd, setEventCd] = useState(null);
+
+  const toggleFullScreen = useCallback((elem) => {
+    if (
+      !document.fullscreenElement &&
+      !document.mozFullScreenElement &&
+      !document.webkitFullscreenElement &&
+      !document.msFullscreenElement
+    ) {
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.mozRequestFullScreen) {
+        elem.mozRequestFullScreen();
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+      }
+      setRenderFlag((prev) => !prev);
+      fullscreenFlag.current = true;
+    } else {
+      if (document.cancelFullScreen) {
+        document.cancelFullScreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.webkitCancelFullScreen) {
+        document.webkitCancelFullScreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
+      setRenderFlag((prev) => !prev);
+      fullscreenFlag.current = false;
+    }
+  }, []);
+
+  const setEmptyDonutChart = useCallback((series) => {
+    series.slices.template.set('tooltipText', '');
+    series.slices.template.set('toggleKey', 'none');
+
+    series.labels.template.set('forceHidden', true);
+    series.ticks.template.set('visible', false);
+  }, []);
+
+  const setDefaultDonutChart = useCallback((series) => {
+    series.slices.template.set('tooltipText', '{value}');
+    series.slices.template.set('toggleKey', 'active');
+
+    series.labels.template.set('forceHidden', false);
+    series.ticks.template.set('visible', true);
+  }, []);
+
+  const parseData = useCallback((data) => {
+    setMonitoringData({ ...data });
+
+    const protocolData = [
+      { protocol: 'RDP', value: data.rdpRunCount },
+      { protocol: 'FTP', value: data.ftpRunCount },
+      { protocol: 'TELNET', value: data.telnetRunCount },
+      { protocol: 'SFTP', value: data.sftpRunCount },
+      { protocol: 'SSH', value: data.sshRunCount },
+    ];
+
+    let _accessUserChartData = [...emptyTopUserData];
+    let _accessSystemChartData = [...emptyTopSystemData];
+    let _accessUserTableData = [...accessUserTableDataTemplate];
+    let _accessSystemTableData = [...accessSystemTableDataTemplate];
+    if (data.accessUserInfo?.length > 0) {
+      _accessUserChartData = data.accessUserInfo?.map((info) => ({
+        userName: info.userName,
+        count: info.count,
+      }));
+
+      _accessUserTableData = _accessUserTableData?.map((info, idx) => ({
+        ...info,
+        userPart: data.accessUserInfo[`${idx}`]?.userPart || '-',
+        deptNm: data.accessUserInfo[`${idx}`]?.deptNm || '-',
+        userName: data.accessUserInfo[`${idx}`]?.userName || '-',
+        count: data.accessUserInfo[`${idx}`]?.count || '-',
+      }));
+    }
+
+    if (data.accessSystemInfo?.length > 0) {
+      _accessSystemChartData = data.accessSystemInfo?.map((info) => ({
+        pfNm: info.pfNm,
+        count: info.count,
+      }));
+
+      _accessSystemTableData = _accessSystemTableData?.map((info, idx) => ({
+        ...info,
+        pfNm: data.accessSystemInfo[`${idx}`]?.pfNm || '-',
+        ipAddr: data.accessSystemInfo[`${idx}`]?.ipAddr || '-',
+        pfTypeNm: data.accessSystemInfo[`${idx}`]?.pfTypeNm || '-',
+        count: data.accessSystemInfo[`${idx}`]?.count || '-',
+      }));
+    }
+
+    unstable_batchedUpdates(() => {
+      setProtocolChartData(protocolData);
+      setProtocol24ChartData(
+        data.protocolAccessInfo !== null
+          ? data.protocolAccessInfo.map((data) => ({
+              ...data,
+              hour:
+                data.hour + intl.formatMessage({ id: 'monitoring.monitoring-access-hour-prefix' }),
+            }))
+          : emptyProtocol24Data.map((data) => ({
+              ...data,
+              hour:
+                data.hour + intl.formatMessage({ id: 'monitoring.monitoring-access-hour-prefix' }),
+            })),
+      );
+      setAccessUserChartData(_accessUserChartData);
+      setAccessSystemChartData(_accessSystemChartData);
+      setAccessUserTableData(_accessUserTableData);
+      setAccessSystemTableData(_accessSystemTableData);
+      setRenderFlag((prev) => !prev);
+    });
+  }, []);
+
+  const getData = useCallback(async (isFirst = false) => {
+    if (!isFirst && !isVisible.current) {
+      setTimeout(() => {
+        getData();
+      }, 2000);
+      return;
+    }
+    const result = await apiCall(accessMonApi.getAccessMonitoringData);
+
+    if (result.status === 200) {
+      parseData(result.data);
+
+      setTimeout(() => {
+        getData();
+      }, 2000);
+    }
+  }, []);
+
+  useEffect(() => {
+    getData(true);
+  }, []);
+
+  useEffect(() => {
+    unstable_batchedUpdates(() => {
+      if (protocolChart) {
+        updateRowBarChart(protocolChart, protocolChartData);
+      }
+      if (protocol24Chart) {
+        updateLineBarChart(protocol24Chart, protocol24ChartData);
+      }
+      if (accessUserChart) {
+        updateDonutChart(accessUserChart, accessUserChartData);
+      }
+      if (accessSystemChart) {
+        updateDonutChart(accessSystemChart, accessSystemChartData);
+      }
+    });
+  }, [renderFlag]);
+
+  const updateRowBarChart = useCallback((chart, data) => {
+    if (chart) {
+      const series = chart.series;
+
+      series.values[0].data.setAll(data);
+    }
+  }, []);
+
+  const updateLineBarChart = useCallback((chart, data) => {
+    if (chart) {
+      const series = chart.series.values;
+
+      for (const s of series) {
+        s.data.setAll(data);
+      }
+    }
+  }, []);
+
+  const updateDonutChart = useCallback((chart, data) => {
+    if (chart) {
+      const series = chart.series;
+
+      series.values[0].data.setAll(data);
+
+      if (data[0].pfNm === 'showChartDummy' || data[0].userName === 'showChartDummy') {
+        setEmptyDonutChart(series.values[0]);
+      } else {
+        setDefaultDonutChart(series.values[0]);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    let observer;
+    if (monitorRef.current) {
+      observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          isVisible.current = entry.isIntersecting;
+        });
+      });
+
+      observer.observe(monitorRef.current);
+    }
+
+    return () => observer?.disconnect();
+  }, [monitorRef.current]);
+
+  if (monitoringData === null) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          position: 'absolute',
+          height: '100vh',
+          width: '100%',
+          alignItems: 'center',
+          background: '#1F2B48',
+          zIndex: 99999,
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  return (
+    <Box
+      sx={{ display: 'flex', width: '100%', height: '100vh', flexDirection: 'column' }}
+      ref={monitorRef}
+    >
+      <GridItem
+        container
+        direction="row"
+        directionHorizon="space-between"
+        directionVertical="center"
+        sx={{ bgcolor: '#1E232E' }}
+      >
+        <GridItem item>
+          <Typography sx={{ ml: 5 }} variant="title2" color="white">
+            {/*접근제어 모니터링*/}
+            {intl.formatMessage({ id: 'monitoring.monitoring-access' })}
+          </Typography>
+        </GridItem>
+        <GridItem item sx={{ mr: 5, mt: 1 }}>
+          {fullscreenFlag.current && (
+            <FullscreenExitOutlined
+              style={{ color: '#fff', fontSize: '30px', cursor: 'pointer', ml: 1 }}
+              sx={{ ml: 1 }}
+              onClick={() => {
+                toggleFullScreen(document.body);
+              }}
+            />
+          )}
+          {!fullscreenFlag.current && (
+            <FullscreenOutlined
+              style={{ color: '#fff', fontSize: '30px', cursor: 'pointer', ml: 1 }}
+              sx={{ ml: 1 }}
+              onClick={() => {
+                toggleFullScreen(document.body);
+              }}
+            />
+          )}
+          <CancelPresentationOutlined
+            style={{ color: '#fff', fontSize: '30px', cursor: 'pointer', ml: 1 }}
+            sx={{ ml: 1 }}
+            onClick={() => {
+              self.close();
+            }}
+          />
+        </GridItem>
+      </GridItem>
+      <GridItem
+        container
+        direction="column"
+        sx={{
+          flexWrap: 'nowrap',
+          p: 5,
+          pt: 0,
+          pb: 0,
+          mt: 0,
+          background: '#1F2B48',
+          minHeight: 'calc(100vh - 47px)',
+          minWidth: '1837px',
+          color: '#fff',
+        }}
+        spacing={2}
+      >
+        {/* =========================== line 1 =========================== */}
+        <GridItem item direction="row" spacing={2}>
+          {/* 사용자 관련 항목 */}
+          <GridItem item xs={3}>
+            <GridItem container direction="column" spacing={1}>
+              <GridItem item>
+                <Typography variant="h4" pl={1}>
+                  {/*사용자*/}
+                  {intl.formatMessage({ id: 'monitoring.monitoring-access-user' })}
+                </Typography>
+              </GridItem>
+              <GridItem item>
+                <DashboardMainCard
+                  sx={{
+                    height: '120px',
+                  }}
+                >
+                  <GridItem container spacing={5}>
+                    <GridItem
+                      item
+                      xs={4}
+                      onClick={() => setUserConnStatOpen(true)}
+                      sx={{ cursor: 'pointer' }}
+                    >
+                      <Stack direction="row" alignItems="center" justifyContent="space-between">
+                        <TeamOutlined style={{ color: '#3DFFDC', fontSize: '25px' }} />
+                        <Stack direction="row" alignItems="center">
+                          <Typography variant="h6" ml={0.5} sx={{ color: 'rgba(255,255,255,0.5)' }}>
+                            {/*접속 중*/}
+                            {intl.formatMessage({ id: 'monitoring.monitoring-access-connecting' })}
+                          </Typography>
+                        </Stack>
+                      </Stack>
+
+                      <Stack
+                        direction="row"
+                        alignItems="baseline"
+                        justifyContent="flex-end"
+                        spacing={1}
+                        sx={{ color: '#fff', mt: 1 }}
+                      >
+                        <Typography variant="h3">{monitoringData.userConnectCount}</Typography>
+                        <Typography variant="h6" ml={0.5}>
+                          {/*명*/}
+                          {intl.formatMessage({ id: 'monitoring.monitoring-access-user-count' })}
+                        </Typography>
+                      </Stack>
+
+                      <Stack sx={{ color: '#3DFFDC', mt: 2 }}>
+                        <LinearProgress
+                          variant="determinate"
+                          value={Math.round(
+                            (monitoringData.userConnectCount / monitoringData.totalUserCount) * 100,
+                          )}
+                          color="inherit"
+                        />
+                      </Stack>
+                    </GridItem>
+
+                    <GridItem
+                      item
+                      xs={4}
+                      onClick={() => setUserNormalStatOpen(true)}
+                      sx={{ cursor: 'pointer' }}
+                    >
+                      <Stack direction="row" alignItems="center" justifyContent="space-between">
+                        <TeamOutlined style={{ color: '#5A3FFF', fontSize: '25px' }} />
+                        <Stack direction="row" alignItems="center">
+                          <Typography variant="h6" sx={{ color: '#fff' }}>
+                            {/*정상*/}
+                            {intl.formatMessage({ id: 'monitoring.monitoring-access-normal' })}
+                          </Typography>
+                          <Typography variant="h6" ml={0.5} sx={{ color: 'rgba(255,255,255,0.5)' }}>
+                            {/*사용자*/}
+                            {intl.formatMessage({ id: 'monitoring.monitoring-access-user' })}
+                          </Typography>
+                        </Stack>
+                      </Stack>
+
+                      <Stack
+                        direction="row"
+                        alignItems="baseline"
+                        justifyContent="flex-end"
+                        spacing={1}
+                        sx={{ color: '#fff', mt: 1 }}
+                      >
+                        <Typography variant="h3">{monitoringData.userNormalCount}</Typography>
+                        <Typography variant="h6" ml={0.5}>
+                          {/*명*/}
+                          {intl.formatMessage({ id: 'monitoring.monitoring-access-user-count' })}
+                        </Typography>
+                      </Stack>
+
+                      <Stack sx={{ color: '#5A3FFF', mt: 2 }}>
+                        <LinearProgress
+                          variant="determinate"
+                          value={Math.round(
+                            (monitoringData.userNormalCount / monitoringData.totalUserCount) * 100,
+                          )}
+                          color="inherit"
+                        />
+                      </Stack>
+                    </GridItem>
+
+                    <GridItem
+                      item
+                      xs={4}
+                      onClick={() => setUserLockStatOpen(true)}
+                      sx={{ cursor: 'pointer' }}
+                    >
+                      <Stack direction="row" alignItems="center" justifyContent="space-between">
+                        <UsergroupDeleteOutlined style={{ color: '#ff0000', fontSize: '25px' }} />
+                        <Stack direction="row" alignItems="center">
+                          <Typography variant="h6" sx={{ color: '#fff' }}>
+                            {/*차단*/}
+                            {intl.formatMessage({ id: 'monitoring.monitoring-access-block' })}
+                          </Typography>
+                          <Typography variant="h6" ml={0.5} sx={{ color: 'rgba(255,255,255,0.5)' }}>
+                            {/*사용자*/}
+                            {intl.formatMessage({ id: 'monitoring.monitoring-access-user' })}
+                          </Typography>
+                        </Stack>
+                      </Stack>
+
+                      <Stack
+                        direction="row"
+                        alignItems="baseline"
+                        justifyContent="flex-end"
+                        spacing={1}
+                        sx={{ color: '#fff', mt: 1 }}
+                      >
+                        <Typography variant="h3">{monitoringData.userLockCount}</Typography>
+                        <Typography variant="h6" ml={0.5}>
+                          {/*명*/}
+                          {intl.formatMessage({ id: 'monitoring.monitoring-access-user-count' })}
+                        </Typography>
+                      </Stack>
+
+                      <Stack sx={{ color: '#ff0000', mt: 2 }}>
+                        <LinearProgress
+                          variant="determinate"
+                          value={Math.round(
+                            (monitoringData.userLockCount / monitoringData.totalUserCount) * 100,
+                          )}
+                          color="inherit"
+                        />
+                      </Stack>
+                    </GridItem>
+                  </GridItem>
+                </DashboardMainCard>
+              </GridItem>
+            </GridItem>
+          </GridItem>
+          {/* 프로토콜별 시스템 현황 */}
+          <GridItem item xs={4.5}>
+            <GridItem container direction="column" spacing={1}>
+              <GridItem item>
+                <Typography variant="h4" pl={1}>
+                  {/*프로토콜별 시스템 현황*/}
+                  {intl.formatMessage({
+                    id: 'monitoring.monitoring-access-system-protocol-status',
+                  })}
+                </Typography>
+              </GridItem>
+              <GridItem item>
+                <DashboardMainCard
+                  sx={{
+                    height: '120px',
+                  }}
+                >
+                  <GridItem container direction="row" spacing={1}>
+                    <GridItem item xs={2}>
+                      <Stack alignItems="center" justifyContent="center" sx={{ height: '75px' }}>
+                        <RouterOutlined sx={{ color: '#fff', fontSize: '60px' }} />
+                      </Stack>
+                    </GridItem>
+                    <GridItem item container direction="row" xs={10} divideColumn={5}>
+                      <GridItem
+                        item
+                        onClick={() => {
+                          setProtocolStatOpen(true);
+                          setPfPtl('01');
+                        }}
+                        sx={{ cursor: 'pointer' }}
+                      >
+                        <Stack alignItems="center" justifyContent="center" sx={{ height: '65px' }}>
+                          <Typography variant="h1" sx={{ color: '#fff', mt: 3 }}>
+                            {monitoringData.registeredSshCount}
+                          </Typography>
+                          <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.5)', mt: 1 }}>
+                            SSH
+                          </Typography>
+                        </Stack>
+                      </GridItem>
+
+                      <GridItem
+                        item
+                        onClick={() => {
+                          setProtocolStatOpen(true);
+                          setPfPtl('02');
+                        }}
+                        sx={{ cursor: 'pointer' }}
+                      >
+                        <Stack alignItems="center" justifyContent="center" sx={{ height: '65px' }}>
+                          <Typography variant="h1" sx={{ color: '#fff', mt: 3 }}>
+                            {monitoringData.registeredSftpCount}
+                          </Typography>
+                          <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.5)', mt: 1 }}>
+                            SFTP
+                          </Typography>
+                        </Stack>
+                      </GridItem>
+
+                      <GridItem
+                        item
+                        onClick={() => {
+                          setProtocolStatOpen(true);
+                          setPfPtl('03');
+                        }}
+                        sx={{ cursor: 'pointer' }}
+                      >
+                        <Stack alignItems="center" justifyContent="center" sx={{ height: '65px' }}>
+                          <Typography variant="h1" sx={{ color: '#fff', mt: 3 }}>
+                            {monitoringData.registeredTelnetCount}
+                          </Typography>
+                          <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.5)', mt: 1 }}>
+                            TELNET
+                          </Typography>
+                        </Stack>
+                      </GridItem>
+
+                      <GridItem
+                        item
+                        onClick={() => {
+                          setProtocolStatOpen(true);
+                          setPfPtl('04');
+                        }}
+                        sx={{ cursor: 'pointer' }}
+                      >
+                        <Stack alignItems="center" justifyContent="center" sx={{ height: '65px' }}>
+                          <Typography variant="h1" sx={{ color: '#fff', mt: 3 }}>
+                            {monitoringData.registeredFtpCount}
+                          </Typography>
+                          <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.5)', mt: 1 }}>
+                            FTP
+                          </Typography>
+                        </Stack>
+                      </GridItem>
+
+                      <GridItem
+                        item
+                        onClick={() => {
+                          setProtocolStatOpen(true);
+                          setPfPtl('05');
+                        }}
+                        sx={{ cursor: 'pointer' }}
+                      >
+                        <Stack alignItems="center" justifyContent="center" sx={{ height: '65px' }}>
+                          <Typography variant="h1" sx={{ color: '#fff', mt: 3 }}>
+                            {monitoringData.registeredRdpCount}
+                          </Typography>
+                          <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.5)', mt: 1 }}>
+                            RDP
+                          </Typography>
+                        </Stack>
+                      </GridItem>
+                    </GridItem>
+                  </GridItem>
+                </DashboardMainCard>
+              </GridItem>
+            </GridItem>
+          </GridItem>
+          {/* 보안 정책 위반 현황 */}
+          <GridItem item xs={4.5}>
+            <GridItem container direction="column" spacing={1}>
+              <GridItem item>
+                <Typography variant="h4" pl={1}>
+                  {/*보안 정책 위반 현황*/}
+                  {intl.formatMessage({
+                    id: 'monitoring.monitoring-access-security-policy-violation-status',
+                  })}
+                </Typography>
+              </GridItem>
+              <GridItem item>
+                <DashboardMainCard
+                  sx={{
+                    height: '120px',
+                  }}
+                >
+                  <GridItem container direction="row" spacing={1}>
+                    <GridItem item xs={2}>
+                      <Stack alignItems="center" justifyContent="center" sx={{ height: '75px' }}>
+                        <ReportOffOutlined sx={{ color: '#ff0000', fontSize: '60px' }} />
+                      </Stack>
+                    </GridItem>
+                    <GridItem item container direction="row" xs={10} divideColumn={5}>
+                      <GridItem
+                        item
+                        onClick={() => {
+                          setViolationStatOpen(true);
+                          setEventCd('EV01');
+                        }}
+                        sx={{ cursor: 'pointer' }}
+                      >
+                        <Stack alignItems="center" justifyContent="center" sx={{ height: '65px' }}>
+                          <Typography variant="h1" sx={{ color: '#fff', mt: 3 }}>
+                            {monitoringData.violationProtocolCount}
+                          </Typography>
+                          <Typography
+                            variant="h6"
+                            sx={{ color: 'rgba(255,255,255,0.5)', mt: 1, fontSize: '12px' }}
+                          >
+                            {/*접근 프로토콜 위반*/}
+                            {intl.formatMessage({
+                              id: 'monitoring.monitoring-access-access-protocol-violation',
+                            })}
+                          </Typography>
+                        </Stack>
+                      </GridItem>
+
+                      <GridItem
+                        item
+                        onClick={() => {
+                          setViolationStatOpen(true);
+                          setEventCd('EV02');
+                        }}
+                        sx={{ cursor: 'pointer' }}
+                      >
+                        <Stack alignItems="center" justifyContent="center" sx={{ height: '65px' }}>
+                          <Typography variant="h1" sx={{ color: '#fff', mt: 3 }}>
+                            {monitoringData.violationWeekCount}
+                          </Typography>
+                          <Typography
+                            variant="h6"
+                            sx={{ color: 'rgba(255,255,255,0.5)', mt: 1, fontSize: '12px' }}
+                          >
+                            {/*접근 요일 위반*/}
+                            {intl.formatMessage({
+                              id: 'monitoring.monitoring-access-access-week-violation',
+                            })}
+                          </Typography>
+                        </Stack>
+                      </GridItem>
+
+                      <GridItem
+                        item
+                        onClick={() => {
+                          setViolationStatOpen(true);
+                          setEventCd('EV03');
+                        }}
+                        sx={{ cursor: 'pointer' }}
+                      >
+                        <Stack alignItems="center" justifyContent="center" sx={{ height: '65px' }}>
+                          <Typography variant="h1" sx={{ color: '#fff', mt: 3 }}>
+                            {monitoringData.violationTimeCount}
+                          </Typography>
+                          <Typography
+                            variant="h6"
+                            sx={{ color: 'rgba(255,255,255,0.5)', mt: 1, fontSize: '12px' }}
+                          >
+                            {/*접근 시간 위반*/}
+                            {intl.formatMessage({
+                              id: 'monitoring.monitoring-access-access-time-violation',
+                            })}
+                          </Typography>
+                        </Stack>
+                      </GridItem>
+
+                      <GridItem
+                        item
+                        onClick={() => {
+                          setViolationStatOpen(true);
+                          setEventCd('EV99');
+                        }}
+                        sx={{ cursor: 'pointer' }}
+                      >
+                        <Stack alignItems="center" justifyContent="center" sx={{ height: '65px' }}>
+                          <Typography variant="h1" sx={{ color: '#fff', mt: 3 }}>
+                            {monitoringData.violationCommandCount}
+                          </Typography>
+                          <Typography
+                            variant="h6"
+                            sx={{ color: 'rgba(255,255,255,0.5)', mt: 1, fontSize: '12px' }}
+                          >
+                            {/*금지 명령어 위반*/}
+                            {intl.formatMessage({
+                              id: 'monitoring.monitoring-access-prohibited-command-violation',
+                            })}
+                          </Typography>
+                        </Stack>
+                      </GridItem>
+
+                      <GridItem
+                        item
+                        onClick={() => {
+                          setViolationStatOpen(true);
+                          setEventCd('EV06');
+                        }}
+                        sx={{ cursor: 'pointer' }}
+                      >
+                        <Stack alignItems="center" justifyContent="center" sx={{ height: '65px' }}>
+                          <Typography variant="h1" sx={{ color: '#fff', mt: 3 }}>
+                            {monitoringData.violationAccess}
+                          </Typography>
+                          <Typography
+                            variant="h6"
+                            sx={{ color: 'rgba(255,255,255,0.5)', mt: 1, fontSize: '12px' }}
+                          >
+                            {/*접근 정책 위반*/}
+                            {intl.formatMessage({
+                              id: 'monitoring.monitoring-access-policy-violation',
+                            })}
+                          </Typography>
+                        </Stack>
+                      </GridItem>
+                    </GridItem>
+                  </GridItem>
+                </DashboardMainCard>
+              </GridItem>
+            </GridItem>
+          </GridItem>
+        </GridItem>
+        {/* =========================== line 1 =========================== */}
+
+        {/* =========================== line 2 =========================== */}
+        <GridItem item direction="row" spacing={2}>
+          <GridItem item xs={5} direction="column" spacing={2}>
+            <GridItem item>
+              <MainCard
+                sx={{
+                  background: '#000',
+                  borderRadius: '10px',
+                  border: 0,
+                  height: '204px',
+                  color: '#fff',
+                }}
+              >
+                <GridItem container direction="column" spacing={1}>
+                  <GridItem item>
+                    <Typography variant="h5" sx={{ fontSize: '16px', pl: 1 }}>
+                      {/*프로토콜별 실시간 접속 현황*/}
+                      {intl.formatMessage({
+                        id: 'monitoring.monitoring-access-realtime-connection-status',
+                      })}
+                    </Typography>
+                  </GridItem>
+                  <GridItem item>
+                    <RowBarChart
+                      id="protocolRealTimeStatus"
+                      theme="dark"
+                      chartData={{
+                        data: protocolChartData,
+                        categoryName: 'protocol',
+                        name: 'protocol',
+                        x: 'value',
+                      }}
+                      customHandler={(chart) => setProtocolChart(chart)}
+                    />
+                  </GridItem>
+                </GridItem>
+              </MainCard>
+            </GridItem>
+            <GridItem item>
+              <MainCard
+                sx={{
+                  background: '#000',
+                  borderRadius: '10px',
+                  border: 0,
+                  height: '210px',
+                  color: '#fff',
+                }}
+              >
+                <GridItem container direction="column" spacing={1}>
+                  <GridItem item>
+                    <Typography variant="h5" sx={{ fontSize: '16px', pl: 1 }}>
+                      {/*프로토콜별 24시간 접속 현황*/}
+                      {intl.formatMessage({
+                        id: 'monitoring.monitoring-access-24-hours-connection-status',
+                      })}
+                    </Typography>
+                  </GridItem>
+                  <GridItem item>
+                    <BarLineChart
+                      id="protocol24Status"
+                      theme="dark"
+                      chartData={{
+                        data: protocol24ChartData,
+                        categoryName: 'hour',
+                        seriesData: [
+                          {
+                            label: 'SSH',
+                            y: 'ssh',
+                            fill: '#B3E5FC',
+                            stroke: '#B3E5FC',
+                            fillOpacity: 0.5,
+                          },
+                          {
+                            label: 'SFTP',
+                            y: 'sftp',
+                            fill: '#D8BFD8',
+                            stroke: '#D8BFD8',
+                            fillOpacity: 0.3,
+                          },
+                          {
+                            label: 'TELNET',
+                            y: 'telnet',
+                            fill: '#C5E1A5',
+                            stroke: '#C5E1A5',
+                            fillOpacity: 0.7,
+                          },
+                          {
+                            label: 'FTP',
+                            y: 'ftp',
+                            fill: '#FFECB3',
+                            stroke: '#FFECB3',
+                            fillOpacity: 0.7,
+                          },
+                          {
+                            label: 'RDP',
+                            y: 'rdp',
+                            fill: '#FFD8BE',
+                            stroke: '#FFD8BE',
+                            fillOpacity: 0.7,
+                          },
+                        ],
+                        lineData: {
+                          // label: '평균(4주)',
+                          label: intl.formatMessage({
+                            id: 'monitoring.monitoring-access-4weeks-average',
+                          }),
+                          y: 'average',
+                          fill: '#E74C3C',
+                          stroke: '#E74C3C',
+                          fillOpacity: 0.5,
+                        },
+                      }}
+                      customHandler={(chart) => setProtocol24Chart(chart)}
+                    />
+                  </GridItem>
+                </GridItem>
+              </MainCard>
+            </GridItem>
+          </GridItem>
+          <GridItem item xs={3.5}>
+            <MainCard
+              sx={{
+                background: '#000',
+                borderRadius: '10px',
+                border: 0,
+                height: '430px',
+                color: '#fff',
+              }}
+            >
+              <GridItem container direction="column" spacing={1}>
+                <GridItem item>
+                  <Typography variant="h5" sx={{ fontSize: '16px', pl: 1 }}>
+                    {/*접속 사용자 TOP 3*/}
+                    {intl.formatMessage({
+                      id: 'monitoring.monitoring-access-connection-user-top-3',
+                    })}
+                  </Typography>
+                </GridItem>
+                <GridItem item>
+                  <GridItem item container direction="column" spacing={2}>
+                    <GridItem item>
+                      <DonutChart
+                        id="AccessUser"
+                        theme="dark"
+                        style={{
+                          minWidth: '230px',
+                          height: '235px',
+                          fontSize: '12px',
+                        }}
+                        chartData={{
+                          // innerLabel: '사용자',
+                          innerLabel: intl.formatMessage({
+                            id: 'monitoring.monitoring-access-user',
+                          }),
+                          data: accessUserChartData,
+                          seriesData: {
+                            category: 'userName',
+                            value: 'count',
+                          },
+                        }}
+                        customHandler={(root, chart) => {
+                          setAccessUserChart(chart);
+                        }}
+                      />
+                    </GridItem>
+                    <GridItem
+                      item
+                      sx={{
+                        '& .MuiTypography-root': { width: '100%' },
+                        '& .MuiTableCell-root': {
+                          height: '20px !important',
+                          maxHeight: '20px !important',
+                        },
+                        '& .MuiTableCell-root.rank': {
+                          width: '30px',
+                          maxWidth: '30px',
+                        },
+                        '& .MuiTableCell-root.userPart, .MuiTableCell-root.deptNm, .MuiTableCell-root.userName':
+                          {
+                            width: '80px',
+                            maxWidth: '80px',
+                          },
+                        '& .MuiTableCell-root.count': {
+                          width: '50px',
+                          maxWidth: '50px',
+                        },
+                      }}
+                    >
+                      <MiniTable
+                        columns={[
+                          {
+                            // label: '순위',
+                            label: intl.formatMessage({ id: 'monitoring.monitoring-access-rank' }),
+                            id: 'rank',
+                            options: { textAlign: 'center', width: '30px' },
+                          },
+                          {
+                            // label: '사용자 소속',
+                            label: intl.formatMessage({
+                              id: 'monitoring.monitoring-access-affiliation',
+                            }),
+                            id: 'userPart',
+                            options: { textAlign: 'center', width: '80px' },
+                          },
+                          {
+                            // label: '부서',
+                            label: intl.formatMessage({
+                              id: 'monitoring.monitoring-access-department',
+                            }),
+                            id: 'deptNm',
+                            options: { textAlign: 'center', width: '80px' },
+                          },
+                          {
+                            // label: '사용자명',
+                            label: intl.formatMessage({
+                              id: 'monitoring.monitoring-access-user-name',
+                            }),
+                            id: 'userName',
+                            options: { textAlign: 'center', width: '80px' },
+                          },
+                          {
+                            // label: '횟수',
+                            label: intl.formatMessage({ id: 'monitoring.monitoring-access-count' }),
+                            id: 'count',
+                            options: { textAlign: 'center', width: '50px' },
+                          },
+                        ]}
+                        data={accessUserTableData}
+                        ellipsis
+                        onlyDark
+                        outlineBorder={false}
+                      />
+                    </GridItem>
+                  </GridItem>
+                </GridItem>
+              </GridItem>
+            </MainCard>
+          </GridItem>
+          <GridItem item xs={3.5}>
+            <MainCard
+              sx={{
+                background: '#000',
+                borderRadius: '10px',
+                border: 0,
+                height: '430px',
+                color: '#fff',
+              }}
+            >
+              <GridItem container direction="column" spacing={1}>
+                <GridItem item>
+                  <Typography variant="h5" sx={{ fontSize: '16px', pl: 1 }}>
+                    {/*접속 시스템 TOP 3*/}
+                    {intl.formatMessage({
+                      id: 'monitoring.monitoring-access-connection-system-top-3',
+                    })}
+                  </Typography>
+                </GridItem>
+                <GridItem item>
+                  <GridItem item container direction="column" spacing={2}>
+                    <GridItem item>
+                      <DonutChart
+                        id="AccessSystem"
+                        theme="dark"
+                        style={{
+                          minWidth: '230px',
+                          height: '235px',
+                          fontSize: '12px',
+                        }}
+                        chartData={{
+                          // innerLabel: '시스템',
+                          innerLabel: intl.formatMessage({
+                            id: 'monitoring.monitoring-access-system',
+                          }),
+                          data: accessSystemChartData,
+                          seriesData: {
+                            category: 'pfNm',
+                            value: 'count',
+                          },
+                        }}
+                        customHandler={(root, chart) => setAccessSystemChart(chart)}
+                      />
+                    </GridItem>
+                    <GridItem
+                      item
+                      sx={{
+                        '& .MuiTypography-root': { width: '100%' },
+                        '& .MuiTableCell-root': {
+                          height: '20px !important',
+                          maxHeight: '20px !important',
+                        },
+                        '& .MuiTableCell-root.rank': {
+                          width: '30px',
+                          maxWidth: '30px',
+                        },
+                        '& .MuiTableCell-root.pfNm, .MuiTableCell-root.ipAddr, .MuiTableCell-root.pfTypeNm':
+                          {
+                            width: '80px',
+                            maxWidth: '80px',
+                          },
+                        '& .MuiTableCell-root.count': {
+                          width: '50px',
+                          maxWidth: '50px',
+                        },
+                      }}
+                    >
+                      <MiniTable
+                        columns={[
+                          {
+                            // label: '순위',
+                            label: intl.formatMessage({ id: 'monitoring.monitoring-access-rank' }),
+                            id: 'rank',
+                            options: { textAlign: 'center', width: '30px' },
+                          },
+                          {
+                            // label: '시스템명',
+                            label: intl.formatMessage({
+                              id: 'monitoring.monitoring-access-system-name',
+                            }),
+                            id: 'pfNm',
+                            options: { textAlign: 'center', width: '80px' },
+                          },
+                          {
+                            // label: '시스템IP',
+                            label: intl.formatMessage({
+                              id: 'monitoring.monitoring-access-system-ip',
+                            }),
+                            id: 'ipAddr',
+                            options: { textAlign: 'center', width: '80px' },
+                          },
+                          {
+                            // label: '시스템OS',
+                            label: intl.formatMessage({
+                              id: 'monitoring.monitoring-access-system-os',
+                            }),
+                            id: 'pfTypeNm',
+                            options: { textAlign: 'center', width: '80px' },
+                          },
+                          {
+                            // label: '횟수',
+                            label: intl.formatMessage({ id: 'monitoring.monitoring-access-count' }),
+                            id: 'count',
+                            options: { textAlign: 'center', width: '50px' },
+                          },
+                        ]}
+                        data={accessSystemTableData}
+                        onlyDark
+                        ellipsis
+                        outlineBorder={false}
+                      />
+                    </GridItem>
+                  </GridItem>
+                </GridItem>
+              </GridItem>
+            </MainCard>
+          </GridItem>
+        </GridItem>
+        {/* =========================== line 2 =========================== */}
+
+        {/* =========================== line 3 =========================== */}
+        <GridItem item direction="row">
+          <GridItem item xs={12}>
+            <MainCard
+              sx={{
+                background: '#000',
+                borderRadius: '10px',
+                border: 0,
+                height: '290px',
+                color: '#fff',
+                '& .MuiCardContent-root': {
+                  p: 0,
+                },
+              }}
+            >
+              <ViewerScrollableContainer>
+                {monitoringData.accessSystemRunInfo?.map((info) => {
+                  if (info.systemType === '05')
+                    return <RdpViewer key={info.sessionId} systemInfo={info} />;
+                  else return <TerminalViewer key={info.sessionId} systemInfo={info} />;
+                })}
+              </ViewerScrollableContainer>
+            </MainCard>
+          </GridItem>
+        </GridItem>
+        {/* =========================== line 3 =========================== */}
+      </GridItem>
+
+      <UserConnStatModal open={userConnStatOpen} setOpen={setUserConnStatOpen} />
+      <UserNormalStatModal open={userNormalStatOpen} setOpen={setUserNormalStatOpen} />
+      <UserLockStatModal open={userLockStatOpen} setOpen={setUserLockStatOpen} />
+      <ProtocolStatModal open={protocolStatOpen} setOpen={setProtocolStatOpen} pfPtl={pfPtl} />
+      <ViolationStatModal
+        open={violationStatOpen}
+        setOpen={setViolationStatOpen}
+        eventCd={eventCd}
+      />
+    </Box>
+  );
+}
+
+const AccessDashboardPopupLayout = ({ page }) => {
+  const intl = useIntl();
+
+  return (
+    <Layout variant="monPopup" title={intl.formatMessage({ id: 'monitoring.monitoring-access' })}>
+      {page}
+    </Layout>
+  );
+};
+
+AccessDashboardPopup.getLayout = (page) => <AccessDashboardPopupLayout page={page} />;
+
+export default AccessDashboardPopup;

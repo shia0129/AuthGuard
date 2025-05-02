@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>인증서 다운로드</title>
+    <style>
+      :root {
+        --main-bg: #00453e; /* 어두운 청록 배경 */
+        --accent-color: #15665e; /* 초록 포인트 컬러 */
+        --accent-hover: #1d857a; /* hover 시 더 어두운 포인트 */
+        --accent-border: #15665e; /* 테두리도 동일 포인트 */
+        --text-light: #ffffff;
+        --text-dark: #2c2c2c;
+        --card-bg: #f4f6f7; /* 연한 회색 카드 배경 */
+      }
+
+      body {
+        background-color: var(--main-bg);
+        color: var(--text-dark);
+        font-family: "Inter", "Noto Sans", sans-serif;
+        padding: 2vw;
+        font-size: clamp(14px, 1.2vw, 18px);
+      }
+
+      .container {
+        max-width: 680px;
+        margin: auto;
+      }
+
+      .card {
+        background-color: var(--card-bg);
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.1);
+        margin-top: 2rem;
+      }
+
+      .access-image {
+        width: clamp(120px, 20vw, 200px);
+        height: auto;
+        display: block;
+        margin: 0 auto 1.5rem;
+      }
+
+      h2 {
+        color: var(--main-bg);
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .btn {
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        text-align: center;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out;
+        display: inline-block;
+        width: 100%;
+        border: none;
+      }
+
+      .btn:disabled,
+      .btn-table:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .btn-access {
+        background-color: var(--accent-color);
+        color: white;
+      }
+
+      .btn-access:hover {
+        background-color: var(--accent-hover);
+      }
+
+      .btn-table {
+        background-color: var(--accent-color);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 5px;
+        text-decoration: none;
+        display: inline-block;
+        border: none;
+      }
+
+      .btn-table:hover {
+        background-color: var(--accent-hover);
+      }
+
+      .spinner {
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid white;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        vertical-align: middle;
+        margin-left: 8px;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 2rem;
+        font-size: 0.95rem;
+        table-layout: fixed;
+      }
+
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 12px;
+        text-align: center;
+        width: 50%;
+      }
+
+      th {
+        background-color: #f1f1f1;
+        color: var(--text-dark);
+      }
+
+      td:last-child {
+        text-align: center;
+      }
+
+      .note {
+        margin-top: 1.5rem;
+        font-size: 0.85rem;
+        color: var(--text-dark);
+        text-align: center;
+      }
+
+      .warn-msg {
+        margin-top: 1rem;
+        border: 1px solid #f5c6cb;
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 0.75rem 1rem;
+        font-size: 0.85rem;
+        border-radius: 0.375rem;
+        text-align: center;
+        line-height: 1.4;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <img src="" class="access-image" id="logo1" alt="로고" />
+        <h2>인증서 설치 안내</h2>
+        <button
+          class="btn btn-access"
+          id="downloadBtn"
+          onclick="downloadCert()"
+        >
+          인증서 받기
+          <span id="spinner" class="spinner hidden"></span>
+        </button>
+        <table>
+          <thead>
+            <tr>
+              <th>운영체제</th>
+              <th>매뉴얼</th>
+            </tr>
+          </thead>
+          <tbody id="os-table">
+            <tr data-os="windows">
+              <td>Windows</td>
+              <td>
+                <button
+                  class="btn-table"
+                  id="btn-windows"
+                  onclick="downloadManual('windows')"
+                >
+                  다운로드
+                  <span id="spinner-windows" class="spinner hidden"></span>
+                </button>
+              </td>
+            </tr>
+            <tr data-os="macos">
+              <td>macOS</td>
+              <td>
+                <button
+                  class="btn-table"
+                  id="btn-macos"
+                  onclick="downloadManual('macos')"
+                >
+                  다운로드
+                  <span id="spinner-macos" class="spinner hidden"></span>
+                </button>
+              </td>
+            </tr>
+            <tr data-os="android">
+              <td>Android</td>
+              <td>
+                <button
+                  class="btn-table"
+                  id="btn-android"
+                  onclick="downloadManual('android')"
+                >
+                  다운로드
+                  <span id="spinner-android" class="spinner hidden"></span>
+                </button>
+              </td>
+            </tr>
+            <tr data-os="ios">
+              <td>iOS</td>
+              <td>
+                <button
+                  class="btn-table"
+                  id="btn-ios"
+                  onclick="downloadManual('ios')"
+                >
+                  다운로드
+                  <span id="spinner-ios" class="spinner hidden"></span>
+                </button>
+              </td>
+            </tr>
+            <tr data-os="linux">
+              <td>Linux</td>
+              <td>
+                <button
+                  class="btn-table"
+                  id="btn-linux"
+                  onclick="downloadManual('linux')"
+                >
+                  다운로드
+                  <span id="spinner-linux" class="spinner hidden"></span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="note">※ 인증서 설치 후 브라우저를 재시작해 주세요.</p>
+        <div class="warn-msg">
+          ⚠️ 일부 브라우저에서는 "<strong>장치를 손상시킬 수 있습니다</strong
+          >"라는 메시지가 표시될 수 있습니다.<br />
+          이 인증서는 <strong>정상적인 보안 장비에서 발급된 파일</strong>이며,
+          설치하셔도 무방합니다.
+        </div>
+      </div>
+    </div>
+    <script>
+      const base64Logo =
+        "data:image/png;base64,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"; // base64 -w 0 hanssak_CI_en2.png
+      document.getElementById("logo1").src = base64Logo;
+
+      function getUserOS() {
+        const userAgent = navigator.userAgent.toLowerCase();
+
+        if (/windows/.test(userAgent)) return "windows";
+        if (/android/.test(userAgent)) return "android";
+        if (/iphone|ipod/.test(userAgent)) return "ios";
+
+        // iPad는 mac으로 오인될 수 있어 touch 확인
+        if (
+          /ipad/.test(userAgent) ||
+          (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+        ) {
+          return "ios";
+        }
+
+        if (/mac/.test(userAgent)) return "macos";
+        if (/linux/.test(userAgent)) return "linux";
+
+        return "unknown";
+      }
+
+      function filterOSTable() {
+        const os = getUserOS();
+        const rows = document.querySelectorAll("#os-table tr");
+
+        let found = false;
+
+        rows.forEach((row) => {
+          if (row.dataset.os === os) {
+            row.style.display = "table-row";
+            found = true;
+          } else {
+            row.style.display = "none";
+          }
+        });
+
+        if (!found) {
+          rows.forEach((row) => (row.style.display = "table-row")); // OS 인식 실패 시 전체 보이기
+        }
+      }
+
+      function downloadManual(os) {
+        const ip = window.location.hostname;
+        const port = window.location.port || "8443";
+        const protocol = window.location.protocol;
+        const url = `${protocol}//${ip}:${port}/api/cert/manuals/download?os=${os}`;
+
+        const btn = document.getElementById(`btn-${os}`);
+        const spinner = document.getElementById(`spinner-${os}`);
+
+        btn.setAttribute("disabled", "true");
+        spinner.classList.remove("hidden");
+
+        fetch(url, { method: "HEAD" })
+          .then((response) => {
+            if (!response.ok) throw new Error("Download failed");
+
+            const link = document.createElement("a");
+            link.href = url;
+            // link.setAttribute("download", `${os}-guide.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          })
+          .catch((err) => {
+            console.error("Download Error:", err);
+            alert("매뉴얼 다운로드에 실패했습니다. 관리자에게 문의하세요.");
+          })
+          .finally(() => {
+            btn.removeAttribute("disabled");
+            spinner.classList.add("hidden");
+          });
+      }
+
+      async function downloadCert() {
+        const ip = window.location.hostname;
+        const port = window.location.port || "8443";
+        const protocol = window.location.protocol;
+        const url = `${protocol}//${ip}:${port}/api/cert/download`;
+
+        const btn = document.getElementById("downloadBtn");
+        const spinner = document.getElementById("spinner");
+
+        btn.setAttribute("disabled", "true");
+        spinner.classList.remove("hidden");
+
+        try {
+          const response = await fetch(url, { method: "HEAD" });
+
+          if (!response.ok) {
+            throw new Error("Download failed");
+          }
+
+          // 다운로드 링크 생성 및 클릭
+          const link = document.createElement("a");
+          link.href = url;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        } catch (err) {
+          console.error("Download Error:", err);
+          alert("인증서 다운로드에 실패했습니다. 관리자에게 문의하세요.");
+        } finally {
+          btn.removeAttribute("disabled");
+          spinner.classList.add("hidden");
+        }
+      }
+
+      window.onload = filterOSTable;
+    </script>
+  </body>
+</html>

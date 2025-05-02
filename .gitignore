@@ -1,0 +1,8 @@
+node_modules
+.next
+.idea
+yarn.lock
+npm_packages
+.next.zip
+.env.local
+out

@@ -1,0 +1,1492 @@
+import Layout from '@components/layouts';
+import { AuthInstance } from '@modules/axios';
+import HsLib from '@modules/common/HsLib';
+import useApi from '@modules/hooks/useApi';
+import { useSession } from 'next-auth/react';
+import { useEffect, useState,useRef } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import GridItem from '@components/modules/grid/GridItem';
+import MainCard from '@components/mantis/MainCard';
+import { Stack, Typography, Tooltip, Button, Box, Switch } from '@mui/material';
+import LinearProgress from '@mui/material/LinearProgress';
+import { tooltipClasses } from '@mui/material/Tooltip';
+import { styled, useTheme } from '@mui/styles';
+import LabelInput from '@components/modules/input/LabelInput';
+import Label from '@components/modules/label/Label';
+import { PlayCircle, GppGood, GppBad, Info, Margin } from '@mui/icons-material';
+import ButtonSet from '@components/modules/button/ButtonSet';
+import adminApi from '@api/system/adminApi';
+import useConfirmModal from '@modules/hooks/useConfirmModal';
+
+// Icon
+import { TeamOutlined, DatabaseOutlined, HddOutlined } from '@ant-design/icons';
+
+import dynamic from 'next/dynamic';
+import ReactTable from '@components/modules/table/ReactTable';
+import MiniTable from '@components/modules/table/MiniTable';
+
+const XYChart = dynamic(() => import('@components/third-party/am-chart/4/XYChart4'), {
+  ssr: false,
+});
+const XYChart2 = dynamic(() => import('@components/third-party/am-chart/5/XYChart5'), {
+  ssr: false,
+});
+const PieChart4 = dynamic(() => import('@components/third-party/am-chart/4/PieChart4'), {
+  ssr: false,
+});
+const PieChart5 = dynamic(() => import('@components/third-party/am-chart/5/PieChart5'), {
+  ssr: false,
+});
+const data1 = [
+  { date: '2024-01-31T13:02:49.721Z', value1: 0.5, value2: 0.8 },
+  { date: '2024-02-01T13:02:49.721Z', value1: 1, value2: 0.1 },
+  { date: '2024-02-02T13:02:49.721Z', value1: 1, value2: 0.5 },
+  { date: '2024-02-03T13:02:49.721Z', value1: 0.3, value2: 0.7 },
+  { date: '2024-02-04T13:02:49.721Z', value1: 0.5, value2: 0.9 },
+];
+
+const data2 = [
+  { date: '2024-01-31T13:02:49.721Z', value1: 0.5, value2: 0.8, value3: 1 },
+  { date: '2024-02-01T13:02:49.721Z', value1: 1, value2: 0.1, value3: 0.5 },
+  { date: '2024-02-02T13:02:49.721Z', value1: 1, value2: 0.5, value3: 1 },
+  { date: '2024-02-03T13:02:49.721Z', value1: 0.3, value2: 0.7, value3: 0.5 },
+  { date: '2024-02-04T13:02:49.721Z', value1: 0.5, value2: 0.9, value3: 1 },
+];
+
+const dataPieChart1 = [
+  {
+    category: 'test1',
+    value: 501.9,
+  },
+  {
+    category: 'test2',
+    value: 301.9,
+  },
+  {
+    category: 'test3',
+    value: 201.1,
+  },
+  {
+    category: 'test4',
+    value: 165.8,
+  },
+  {
+    category: 'test5',
+    value: 139.9,
+  },
+];
+
+const dataPieChart2 = [
+  {
+    category: 'test6',
+    value: 501.9,
+  },
+  {
+    category: 'test7',
+    value: 301.9,
+  },
+  {
+    category: 'test8',
+    value: 201.1,
+  },
+  {
+    category: 'test9',
+    value: 165.8,
+  },
+  {
+    category: 'test10',
+    value: 139.9,
+  },
+];
+
+const columnStyle = {
+  textAlign: 'center',
+  backgroundColor: 'rgba(0,0,0,0.06)',
+};
+const column1 = [
+  {
+    label: 'Virus',
+    id: 'virus',
+    options: columnStyle,
+  },
+  {
+    label: '파일위변조',
+    id: 'fileVirus',
+    options: columnStyle,
+  },
+  {
+    label: 'Size',
+    id: 'size',
+    options: columnStyle,
+  },
+  {
+    label: 'Type',
+    id: 'type',
+    options: columnStyle,
+  },
+];
+
+const columnData1 = [
+  {
+    virus: 0,
+    fileVirus: 0,
+    size: 0,
+    type: 0,
+  },
+];
+
+const column2 = [
+  {
+    label: '요청일시',
+    id: 'date',
+    options: columnStyle,
+  },
+  {
+    label: '전송구분',
+    id: 'transgerDivision',
+    options: columnStyle,
+  },
+  {
+    label: '시스템',
+    id: 'system',
+    options: columnStyle,
+  },
+  {
+    label: '제목',
+    id: 'title',
+    options: columnStyle,
+  },
+  {
+    label: 'FILE',
+    id: 'file',
+    options: columnStyle,
+  },
+  {
+    label: '상태',
+    id: 'status',
+    options: columnStyle,
+  },
+  {
+    label: '전송',
+    id: 'transfer',
+    options: columnStyle,
+  },
+];
+
+const columnData2 = [
+  {
+    date: '2024.02.16',
+    transgerDivision: '반출',
+    system: 'inproxy_1',
+    title: 'SGHistory.txt 외 1건',
+    file: '435 Kbyte',
+    status: '승인대기',
+    transfer: '성공',
+  },
+  {
+    date: '2024.02.16',
+    transgerDivision: '반출',
+    system: 'inproxy_1',
+    title: 'SGHistory.txt 외 1건',
+    file: '435 Kbyte',
+    status: '승인대기',
+    transfer: '성공',
+  },
+  {
+    date: '2024.02.16',
+    transgerDivision: '반출',
+    system: 'inproxy_1',
+    title: 'SGHistory.txt 외 1건',
+    file: '435 Kbyte',
+    status: '승인대기',
+    transfer: '성공',
+  },
+  {
+    date: '2024.02.16',
+    transgerDivision: '반출',
+    system: 'inproxy_1',
+    title: 'SGHistory.txt 외 1건',
+    file: '435 Kbyte',
+    status: '승인대기',
+    transfer: '성공',
+  },
+  {
+    date: '2024.02.16',
+    transgerDivision: '반출',
+    system: 'inproxy_1',
+    title: 'SGHistory.txt 외 1건',
+    file: '435 Kbyte',
+    status: '승인대기',
+    transfer: '성공',
+  },
+  {
+    date: '2024.02.16',
+    transgerDivision: '반출',
+    system: 'inproxy_1',
+    title: 'SGHistory.txt 외 1건',
+    file: '435 Kbyte',
+    status: '승인대기',
+    transfer: '성공',
+  },
+  {
+    date: '2024.02.16',
+    transgerDivision: '반출',
+    system: 'inproxy_1',
+    title: 'SGHistory.txt 외 1건',
+    file: '435 Kbyte',
+    status: '승인대기',
+    transfer: '성공',
+  },
+  {
+    date: '2024.02.16',
+    transgerDivision: '반출',
+    system: 'inproxy_1',
+    title: 'SGHistory.txt 외 1건',
+    file: '435 Kbyte',
+    status: '승인대기',
+    transfer: '성공',
+  },
+  {
+    date: '2024.02.16',
+    transgerDivision: '반출',
+    system: 'inproxy_1',
+    title: 'SGHistory.txt 외 1건',
+    file: '435 Kbyte',
+    status: '승인대기',
+    transfer: '성공',
+  },
+  {
+    date: '2024.02.16',
+    transgerDivision: '반출',
+    system: 'inproxy_1',
+    title: 'SGHistory.txt 외 1건',
+    file: '435 Kbyte',
+    status: '승인대기',
+    transfer: '성공',
+  },
+  {
+    date: '2024.02.16',
+    transgerDivision: '반출',
+    system: 'inproxy_1',
+    title: 'SGHistory.txt 외 1건',
+    file: '435 Kbyte',
+    status: '승인대기',
+    transfer: '성공',
+  },
+];
+function DashboardPopup() {
+  const BarChart = dynamic(() => import('@components/third-party/am-chart/5/barChart'), {
+    ssr: false,
+  });
+
+  // user bar chart
+  const userInData = [
+    {
+      label: 'UK',
+      value: 35,
+    },
+  ];
+
+  const userOutData = [
+    {
+      label: 'UK',
+      value: 35,
+    },
+  ];
+
+  // traffic line chart
+  const trafficImport = [
+    {
+      date: '2024-01-25 15:00',
+      value: 15,
+    },
+    {
+      date: '2024-01-25 16:00',
+      value: 12,
+    },
+  ];
+
+  const trafficExport = [
+    {
+      date: '2024-01-25 15:00',
+      value2: 20,
+    },
+    {
+      date: '2024-01-25 16:00',
+      value2: 30,
+    },
+  ];
+
+  // transfer (건수) line chart
+  const transferCountData = [
+    {
+      date: '2024-01-25 15:00',
+      value: 7,
+      value2: 24,
+      value3: 10,
+    },
+    {
+      date: '2024-01-25 16:00',
+      value: 18,
+      value2: 30,
+      value3: 27,
+    },
+
+    {
+      date: '2024-01-25 17:00',
+      value: 5,
+      value2: 12,
+      value3: 37,
+    },
+  ];
+
+  // 전송량 현황 line chart
+  const transferMbyteData = [
+    {
+      date: '2024-01-25 15:00',
+      value: 7,
+      value2: 24,
+      value3: 10,
+    },
+    {
+      date: '2024-01-25 16:00',
+      value: 18,
+      value2: 30,
+      value3: 27,
+    },
+
+    {
+      date: '2024-01-25 17:00',
+      value: 5,
+      value2: 12,
+      value3: 37,
+    },
+  ];
+
+  // 내부시스템01 cpu, memory
+  const cpu = [
+    {
+      date: '2024-01-25 15:00',
+      value: 25,
+    },
+    {
+      date: '2024-01-25 16:00',
+      value: 25,
+    },
+  ];
+
+  const os = [
+    {
+      date: '2024-01-25 15:00',
+      value: 7,
+      value2: 24,
+      value3: 10,
+    },
+    {
+      date: '2024-01-25 16:00',
+      value: 18,
+      value2: 30,
+      value3: 27,
+    },
+
+    {
+      date: '2024-01-25 17:00',
+      value: 5,
+      value2: 12,
+      value3: 37,
+    },
+  ];
+
+  // file type top5 데이터
+  const importData = [
+    {
+      label: '파일1',
+      value: 501.9,
+    },
+    {
+      label: '파일2',
+      value: 301.9,
+    },
+    {
+      label: '파일3',
+      value: 201.1,
+    },
+    {
+      label: '파일4',
+      value: 165.8,
+    },
+    {
+      label: '파일5',
+      value: 139.9,
+    },
+  ];
+
+  // 차트에 보여질 라벨
+  const tranferLabel = {
+    valueLabel: '반입',
+    value2Label: '반출',
+    value3Label: '평균(4주)',
+  };
+
+  const systemLabel = {
+    valueLabel: 'OS',
+    value2Label: 'DATA',
+    value3Label: 'DB',
+  };
+
+  // 차트데이터 받아서 쓸 경우
+  const [barChartData1, setBarChartData1] = useState([]);
+  const [barChartData2, setBarChartData2] = useState([]);
+
+  const [pieChartData1, setPieChartData1] = useState([]);
+  const [pieChartData2, setPieChartData2] = useState([]);
+
+  const [miniData1, setMiniData1] = useState([]);
+  const [miniData2, setMiniData2] = useState([]);
+  const useEffect_0001 = useRef(false);
+  useEffect(() => {
+   if (process.env.NODE_ENV === 'development') {  //process.env.NODE_ENV === 'development'
+      if (!useEffect_0001.current){
+        useEffect_0001.current = true;
+        return; 
+      } 
+    }
+    setBarChartData1(data1);
+    setBarChartData2(data2);
+
+    setPieChartData1(dataPieChart1);
+    setPieChartData2(dataPieChart2);
+
+    setMiniData1(columnData1);
+    setMiniData2(columnData2);
+  }, []);
+
+  return (
+    <GridItem
+      container
+      direction="column"
+      sx={{
+        flexWrap: 'nowrap',
+        p: 5,
+        pt: 0,
+        mt: 0,
+        background: '#1F2B48',
+        minHeight: 'calc(100vh - 46px)',
+        minWidth: '1600px',
+        color: '#fff',
+      }}
+      spacing={2}
+    >
+      {/*---------------------------------------1줄 START------------------------------------------  */}
+      <GridItem item direction="row" spacing={2}>
+        <GridItem item xs={2.7}>
+          <Typography variant="h4" pl={1}>
+            USER
+          </Typography>
+          <MainCard
+            sx={{
+              background: 'rgba(0,0,0,0.3)',
+              borderRadius: '10px',
+              border: 0,
+              mt: 1,
+              height: '140px',
+            }}
+          >
+            <GridItem container spacing={2} sx={{ flexWrap: 'nowrap' }}>
+              <GridItem item xs={6} m={1}>
+                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                  <TeamOutlined style={{ color: '#3DFFDC', fontSize: '25px' }} />
+                  <Stack direction="row" alignItems="center">
+                    <Typography variant="h6" sx={{ color: '#fff' }}>
+                      내부
+                    </Typography>
+                    <Typography variant="h6" ml={0.5} sx={{ color: 'rgba(255,255,255,0.5)' }}>
+                      중계 서버
+                    </Typography>
+                  </Stack>
+                </Stack>
+
+                <Stack
+                  direction="row"
+                  alignItems="baseline"
+                  justifyContent="flex-end"
+                  spacing={1}
+                  sx={{ color: '#fff', mt: 1 }}
+                >
+                  <Typography variant="h3">351111</Typography>
+                  <Typography variant="h6" ml={0.5}>
+                    명
+                  </Typography>
+                </Stack>
+                <Stack sx={{ color: '#3DFFDC', mt: 2 }}>
+                  <LinearProgress variant="determinate" value={50} color="inherit" />
+                </Stack>
+              </GridItem>
+
+              <GridItem item xs={6} m={1}>
+                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                  <TeamOutlined style={{ color: '#5A3FFF', fontSize: '25px' }} />
+                  <Stack direction="row" alignItems="center">
+                    <Typography variant="h6" sx={{ color: '#fff' }}>
+                      외부
+                    </Typography>
+                    <Typography variant="h6" ml={0.5} sx={{ color: 'rgba(255,255,255,0.5)' }}>
+                      중계 서버
+                    </Typography>
+                  </Stack>
+                </Stack>
+                <Stack
+                  direction="row"
+                  alignItems="baseline"
+                  justifyContent="flex-end"
+                  spacing={1}
+                  sx={{ color: '#fff', mt: 1 }}
+                >
+                  <Typography variant="h3">35</Typography>
+                  <Typography variant="h6" ml={0.5}>
+                    명
+                  </Typography>
+                </Stack>
+                <Stack sx={{ color: '#5A3FFF', mt: 2 }}>
+                  <LinearProgress variant="determinate" value={50} color="inherit" />
+                </Stack>
+              </GridItem>
+            </GridItem>
+          </MainCard>
+        </GridItem>
+        <GridItem item xs={2.6}>
+          <Typography variant="h4" pl={1}>
+            TODAY
+          </Typography>
+          <MainCard
+            sx={{
+              background: 'rgba(0,0,0,0.3)',
+              borderRadius: '10px',
+              border: 0,
+              mt: 1,
+              height: '140px',
+            }}
+          >
+            <GridItem container spacing={2} sx={{ flexWrap: 'nowrap' }}>
+              <GridItem item xs={6} m={1}>
+                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                  <DatabaseOutlined style={{ color: '#3DFFDC', fontSize: '25px' }} />
+                  <Typography variant="h6" sx={{ color: '#fff' }}>
+                    반입
+                  </Typography>
+                </Stack>
+                <Stack
+                  direction="row"
+                  alignItems="baseline"
+                  justifyContent="flex-end"
+                  spacing={1}
+                  sx={{ color: '#fff', mt: 4 }}
+                >
+                  <Typography variant="h3">0</Typography>
+                  <Typography variant="h6">건</Typography>
+                </Stack>
+              </GridItem>
+              <GridItem item xs={6} m={1}>
+                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                  <HddOutlined style={{ color: '#5A3FFF', fontSize: '25px' }} />
+                  <Typography variant="h6" sx={{ color: '#fff' }}>
+                    반출
+                  </Typography>
+                </Stack>
+                <Stack
+                  direction="row"
+                  alignItems="baseline"
+                  justifyContent="flex-end"
+                  spacing={1}
+                  sx={{ color: '#fff', mt: 4 }}
+                >
+                  <Typography variant="h3">0</Typography>
+                  <Typography variant="h6">건</Typography>
+                </Stack>
+              </GridItem>
+            </GridItem>
+          </MainCard>
+        </GridItem>
+        <GridItem item xs={2.7}>
+          <Typography variant="h4" pl={1}>
+            MONTH
+          </Typography>
+          <MainCard
+            sx={{
+              background: 'rgba(0,0,0,0.3)',
+              borderRadius: '10px',
+              color: '#fff',
+              border: 0,
+              mt: 1,
+              height: '140px',
+            }}
+          >
+            <GridItem container spacing={2} sx={{ flexWrap: 'nowrap' }}>
+              <GridItem item xs={6} m={1}>
+                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                  <Typography variant="h6">반입</Typography>
+                </Stack>
+                <Stack direction="row" justifyContent="space-between" alignItems="baseline" mt={1}>
+                  <Typography variant="caption">당월</Typography>
+                  <Stack direction="row" alignItems="baseline" spacing={1}>
+                    <Typography variant="h3">0</Typography>
+                    <Typography variant="h6">건</Typography>
+                    <Typography>/</Typography>
+                    <Typography variant="h3">0</Typography>
+                    <Typography variant="h6">G</Typography>
+                  </Stack>
+                </Stack>
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="baseline"
+                  mt={1}
+                  sx={{ color: 'rgba(255,255,255,0.5)' }}
+                >
+                  <Typography variant="caption">전월</Typography>
+                  <Stack direction="row" alignItems="baseline" spacing={1}>
+                    <Typography variant="h3">0</Typography>
+                    <Typography variant="h6">건</Typography>
+                    <Typography>/</Typography>
+                    <Typography variant="h3">0</Typography>
+                    <Typography variant="h6">G</Typography>
+                  </Stack>
+                </Stack>
+              </GridItem>
+              <GridItem item xs={6} m={1}>
+                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                  <Typography variant="h6">반출</Typography>
+                </Stack>
+                <Stack direction="row" justifyContent="space-between" alignItems="baseline" mt={1}>
+                  <Typography variant="caption">당월</Typography>
+                  <Stack direction="row" alignItems="baseline" spacing={1}>
+                    <Typography variant="h3">0</Typography>
+                    <Typography variant="h6">건</Typography>
+                    <Typography>/</Typography>
+                    <Typography variant="h3">0</Typography>
+                    <Typography variant="h6">G</Typography>
+                  </Stack>
+                </Stack>
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="baseline"
+                  mt={1}
+                  sx={{ color: 'rgba(255,255,255,0.5)' }}
+                >
+                  <Typography variant="caption">전월</Typography>
+                  <Stack direction="row" alignItems="baseline" spacing={1}>
+                    <Typography variant="h3">0</Typography>
+                    <Typography variant="h6">건</Typography>
+                    <Typography>/</Typography>
+                    <Typography variant="h3">0</Typography>
+                    <Typography variant="h6">G</Typography>
+                  </Stack>
+                </Stack>
+              </GridItem>
+            </GridItem>
+          </MainCard>
+        </GridItem>
+        <GridItem item xs={2}>
+          <Typography variant="h4" pl={1}>
+            WAITING
+          </Typography>
+          <MainCard
+            sx={{
+              background: 'rgba(0,0,0,0.3)',
+              borderRadius: '10px',
+              border: 0,
+              mt: 1,
+              height: '140px',
+            }}
+          >
+            <GridItem container spacing={2} sx={{ flexWrap: 'nowrap' }}>
+              <GridItem item xs={6} m={1} sx={{ color: '#fff' }}>
+                <Stack>
+                  <Typography variant="h6">승인대기</Typography>
+                  <Typography variant="h3" sx={{ textAlign: 'right', mt: 5 }}>
+                    12
+                  </Typography>
+                </Stack>
+              </GridItem>
+              <GridItem item xs={6} m={1} sx={{ color: '#fff' }}>
+                <Stack>
+                  <Typography variant="h6">전송대기</Typography>
+                  <Typography variant="h3" sx={{ textAlign: 'right', mt: 5 }}>
+                    10
+                  </Typography>
+                </Stack>
+              </GridItem>
+            </GridItem>
+          </MainCard>
+        </GridItem>
+        <GridItem item xs={2}>
+          <Typography variant="h4" pl={1}>
+            RETURN
+          </Typography>
+          <MainCard
+            sx={{
+              background: 'rgba(0,0,0,0.3)',
+              borderRadius: '10px',
+              border: 0,
+              mt: 1,
+              height: '140px',
+            }}
+          >
+            <GridItem container spacing={2} sx={{ flexWrap: 'nowrap' }}>
+              <GridItem item xs={6} m={1} sx={{ color: '#fff' }}>
+                <Stack>
+                  <Typography variant="h6">반려</Typography>
+                  <Typography variant="h3" sx={{ textAlign: 'right', mt: 5 }}>
+                    12
+                  </Typography>
+                </Stack>
+              </GridItem>
+              <GridItem item xs={6} m={1} sx={{ color: '#fff' }}>
+                <Stack>
+                  <Typography variant="h6">차단</Typography>
+                  <Typography variant="h3" sx={{ textAlign: 'right', mt: 5 }}>
+                    10
+                  </Typography>
+                </Stack>
+              </GridItem>
+            </GridItem>
+          </MainCard>
+        </GridItem>
+      </GridItem>
+
+      {/*---------------------------------------1줄 END------------------------------------------  */}
+
+      {/*---------------------------------------2/3/4줄 START------------------------------------------  */}
+
+      <GridItem direction="row" item spacing={2}>
+        {/*--------------- 좌측 2/3/4 번줄 START------------------------- */}
+        <GridItem item direction="column" spacing={2} xs={8}>
+          {/*--------------- 좌측 2 번줄 START------------------------- */}
+          <GridItem item direction="row" spacing={2}>
+            <GridItem item xs={4}>
+              <MainCard
+                sx={{
+                  background: '#000',
+                  borderRadius: '10px',
+                  border: 0,
+                  mt: 1,
+                  color: '#fff',
+                  height: '220px',
+                }}
+              >
+                <GridItem item direction="row" justifyContent="space-between" alignItems="baseline">
+                  <Typography variant="h6">트래픽 현황</Typography>
+                </GridItem>
+                <GridItem item mt={2}>
+                  {/* <XYChart
+                    id="trafficChart"
+                    theme="dark"
+                    chartData={{
+                      data: barChartData1,
+                      x: 'date',
+                      seriesData: [
+                        {
+                          label: '반입(kbps)',
+                          y: 'value1',
+                          fill: '#1ED6FF',
+                          stroke: '#1ED6FF',
+                          fillOpacity: 0.5,
+                        },
+                        {
+                          label: '반출(kbps)',
+                          y: 'value2',
+                          fill: '#5A3FFF',
+                          stroke: '#5A3FFF',
+                          fillOpacity: 0.3,
+                        },
+                      ],
+                    }}
+                  /> */}
+                  <XYChart2
+                    id="trafficChart2"
+                    theme="dark"
+                    chartData={{
+                      data: barChartData1,
+                      x: 'date',
+                      seriesData: [
+                        {
+                          label: '반입(kbps)',
+                          y: 'value1',
+                          fill: '#1ED6FF',
+                          stroke: '#1ED6FF',
+                          fillOpacity: 0.5,
+                        },
+                        {
+                          label: '반출(kbps)',
+                          y: 'value2',
+                          fill: '#5A3FFF',
+                          stroke: '#5A3FFF',
+                          fillOpacity: 0.3,
+                        },
+                      ],
+                    }}
+                  />
+                </GridItem>
+              </MainCard>
+            </GridItem>
+            <GridItem item xs={4}>
+              <MainCard
+                sx={{
+                  background: '#000',
+                  borderRadius: '10px',
+                  border: 0,
+                  mt: 1,
+                  color: '#fff',
+                  height: '220px',
+                }}
+              >
+                <GridItem item direction="row" justifyContent="space-between" alignItems="baseline">
+                  <Typography variant="h6">전송건 현황</Typography>
+                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.4)' }}>
+                    (건수)
+                  </Typography>
+                </GridItem>
+                <GridItem item mt={2}>
+                  <XYChart
+                    id="transferCountChart"
+                    theme="dark"
+                    chartData={{
+                      data: barChartData2,
+                      x: 'date',
+                      seriesData: [
+                        {
+                          label: '반입(kbps)',
+                          y: 'value1',
+                          fill: '#1ED6FF',
+                          stroke: '#1ED6FF',
+                          fillOpacity: 0.5,
+                        },
+                        {
+                          label: '반출(kbps)',
+                          y: 'value2',
+                          fill: '#5A3FFF',
+                          stroke: '#5A3FFF',
+                          fillOpacity: 0.3,
+                        },
+                        {
+                          label: '평균(4주)',
+                          y: 'value3',
+                          fill: '#1ED6FF',
+                          stroke: '#1ED6FF',
+                          fillOpacity: 0.7,
+                        },
+                      ],
+                    }}
+                  />
+                  {/* <LineChart
+                    id="transferCount"
+                    totalData={transferCountData}
+                    labelData={tranferLabel}
+                  /> */}
+                </GridItem>
+              </MainCard>
+            </GridItem>
+            <GridItem item xs={4}>
+              <MainCard
+                sx={{
+                  background: '#000',
+                  borderRadius: '10px',
+                  border: 0,
+                  mt: 1,
+                  color: '#fff',
+                  height: '220px',
+                }}
+              >
+                <GridItem item direction="row" justifyContent="space-between" alignItems="baseline">
+                  <Stack direction="row">
+                    <Typography variant="h6">전송량 현황</Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{ color: 'rgba(255,255,255,0.6)', ml: '10px' }}
+                    >
+                      (Mbyte)
+                    </Typography>
+                  </Stack>
+
+                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.4)' }}>
+                    (용량)
+                  </Typography>
+                </GridItem>
+                <GridItem item mt={2}>
+                  <XYChart
+                    id="transferAmountChart"
+                    theme="dark"
+                    chartData={{
+                      data: barChartData2,
+                      x: 'date',
+                      seriesData: [
+                        {
+                          label: '반입(kbps)',
+                          y: 'value1',
+                          fill: '#1ED6FF',
+                          stroke: '#1ED6FF',
+                          fillOpacity: 0.5,
+                        },
+                        {
+                          label: '반출(kbps)',
+                          y: 'value2',
+                          fill: '#5A3FFF',
+                          stroke: '#5A3FFF',
+                          fillOpacity: 0.3,
+                        },
+                        {
+                          label: '평균(4주)',
+                          y: 'value3',
+                          fill: '#1ED6FF',
+                          stroke: '#1ED6FF',
+                          fillOpacity: 0.7,
+                        },
+                      ],
+                    }}
+                  />
+                  {/* <LineChart
+                    id="transferMbyte"
+                    totalData={transferMbyteData}
+                    labelData={tranferLabel}
+                  /> */}
+                </GridItem>
+              </MainCard>
+            </GridItem>
+          </GridItem>
+          {/*--------------- 좌측 2 번줄 END------------------------- */}
+
+          <GridItem item direction="row" spacing={2}>
+            {/*--------------- 좌측 3/4 번줄 1번째 START------------------------- */}
+            <GridItem item direction="column" spacing={2} xs={5.8}>
+              <GridItem item xs={4.5}>
+                <MainCard
+                  sx={{
+                    background: '#000',
+                    borderRadius: '10px',
+                    border: 0,
+                    mt: 1,
+                    color: '#fff',
+                    height: '250px',
+                  }}
+                >
+                  <GridItem
+                    item
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="baseline"
+                  >
+                    <Typography variant="h6">File Type top5</Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{ color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}
+                    >
+                      + 더보기
+                    </Typography>
+                  </GridItem>
+
+                  <GridItem
+                    container
+                    mt={2}
+                    direction="row"
+                    alignItems="center"
+                    sx={{ height: '200px' }}
+                  >
+                    <GridItem item xs={6}>
+                      {/* <PieChart4
+                        id="import"
+                        style={{
+                          minWidth: '230px',
+                          height: '110px',
+                          fontSize: '10px',
+                        }}
+                        theme="dark"
+                        chartData={{
+                          legendData: { position: 'right' },
+                          data: pieChartData1,
+                          seriesData: {
+                            labelText: '반입',
+                          },
+                        }}
+                      /> */}
+                      <PieChart5
+                        id="import"
+                        theme="dark"
+                        style={{
+                          minWidth: '230px',
+                          height: '110px',
+                          fontSize: '10px',
+                        }}
+                        chartData={{
+                          innerLabel: '반입',
+                          data: importData,
+                          seriesData: {
+                            category: 'label',
+                            value: 'value',
+                          },
+                        }}
+                      />
+                      {/* <PieChart5 id="import" centerLabel="반입" data={importData} /> */}
+                    </GridItem>
+                    <GridItem item xs={6}>
+                      <PieChart4
+                        id="export"
+                        style={{
+                          minWidth: '230px',
+                          height: '110px',
+                          fontSize: '10px',
+                        }}
+                        theme="dark"
+                        chartData={{
+                          legendData: { position: 'right' },
+                          data: pieChartData2,
+                          seriesData: {
+                            labelText: '반출',
+                          },
+                        }}
+                      />
+                      {/* <PieChart id="export" centerLabel="반출" data={importData} /> */}
+                    </GridItem>
+                  </GridItem>
+                </MainCard>
+              </GridItem>
+              <GridItem item>
+                <MainCard
+                  sx={{
+                    background: '#000',
+                    borderRadius: '10px',
+                    border: 0,
+                    mt: 1,
+                    color: '#fff',
+                    height: '200px',
+                  }}
+                >
+                  <GridItem
+                    item
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="baseline"
+                  >
+                    <Typography variant="h6">보안 정책 위반</Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{ color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}
+                    >
+                      + 더보기
+                    </Typography>
+                  </GridItem>
+
+                  <GridItem
+                    container
+                    spacing={2}
+                    direction="row"
+                    alignItems="center"
+                    sx={{ height: '160px' }}
+                  >
+                    <GridItem item xs={6}>
+                      <Typography variant="caption" sx={{ lineHeight: '50px' }}>
+                        반입
+                      </Typography>
+                      <MiniTable
+                        sx={{
+                          container: { border: 'unset !important' },
+                          head: {
+                            '& th': {
+                              color: '#eee',
+                              backgroundColor: '#272C38',
+                              minWidth: '40px',
+                              border: 'unset',
+                              lineHeight: '40px;',
+                              height: '40px',
+                            },
+                            '& th:after': { width: 'unset !important' },
+                          },
+                          body: {
+                            '& p': {
+                              color: '#dddddd',
+                              backgroundColor: 'unset',
+                              lineHeight: '40px;',
+                              height: '40px',
+                            },
+                            '& tr:last-of-type > td': { borderBottom: '1px solid !important' },
+                          },
+                          bodyRow: {
+                            ':hover': { backgroundColor: '#f5f5f521 !important' },
+                            '& div': { height: '40px' },
+                            ':last-of-type > td': {
+                              borderBottom: '1px solid #f5f5f547 !important',
+                            },
+                          },
+                          bodyCell: {
+                            height: '40px',
+                            maxHeight: '40px',
+                            borderRight: 'unset !important',
+                            borderColor: '#f5f5f547 !important',
+                          },
+                        }}
+                        ellipsis
+                        columns={column1}
+                        data={miniData1}
+                      />
+                    </GridItem>
+                    <GridItem item xs={6}>
+                      <Typography variant="caption" sx={{ lineHeight: '50px' }}>
+                        반출
+                      </Typography>
+                      <MiniTable
+                        sx={{
+                          container: { border: 'unset !important' },
+                          head: {
+                            '& th': {
+                              color: '#eee',
+                              backgroundColor: '#272C38',
+                              minWidth: '40px',
+                              border: 'unset',
+                              lineHeight: '40px;',
+                              height: '40px',
+                            },
+                            '& th:after': { width: 'unset !important' },
+                          },
+                          body: {
+                            '& p': {
+                              color: '#dddddd',
+                              backgroundColor: 'unset',
+                              lineHeight: '40px;',
+                              height: '40px',
+                            },
+                            '& tr:last-of-type > td': { borderBottom: '1px solid !important' },
+                          },
+                          bodyRow: {
+                            ':hover': { backgroundColor: '#f5f5f521 !important' },
+                            '& div': { height: '40px' },
+                            ':last-of-type > td': {
+                              borderBottom: '1px solid #f5f5f547 !important',
+                            },
+                          },
+                          bodyCell: {
+                            height: '40px',
+                            maxHeight: '40px',
+                            borderRight: 'unset !important',
+                            borderColor: '#f5f5f547 !important',
+                          },
+                        }}
+                        ellipsis
+                        columns={column1}
+                        data={miniData1}
+                      />
+                    </GridItem>
+                  </GridItem>
+                </MainCard>
+              </GridItem>
+            </GridItem>
+            {/*--------------- 좌측 3/4 번줄 1번째 END------------------------- */}
+
+            {/*--------------- 좌측 3/4 번줄 2번째 START------------------------- */}
+            <GridItem item xs={6.2}>
+              <MainCard
+                sx={{
+                  background: '#000',
+                  borderRadius: '10px',
+                  border: 0,
+                  mt: 1,
+                  color: '#fff',
+                  height: '475px',
+                }}
+              >
+                <GridItem item direction="row" justifyContent="space-between" alignItems="baseline">
+                  <Typography variant="h6">사용자 반입/반출 현황</Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}
+                  >
+                    + 더보기
+                  </Typography>
+                </GridItem>
+
+                <GridItem
+                  item
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  mt={2}
+                  mb={2}
+                >
+                  <Stack direction="row" spacing={1}>
+                    <LabelInput
+                      type="select"
+                      size="small"
+                      sx={{
+                        width: 100,
+                        backgroundColor: 'unset !important',
+                        color: '#fff',
+                        '& svg': { color: 'rgba(255,255,255,0.5)' },
+                        '& fieldset': {
+                          borderColor: 'rgba(255,255,255,0.5) !important',
+                        },
+                      }}
+                    />
+                    <LabelInput
+                      size="small"
+                      sx={{
+                        width: 200,
+                        backgroundColor: 'unset !important',
+                        '& input': {
+                          color: '#fff',
+                        },
+                        '& fieldset': {
+                          borderColor: 'rgba(255,255,255,0.5) !important',
+                        },
+                      }}
+                    />
+                  </Stack>
+
+                  <Stack direction="row" sx={{ mr: -1 }}>
+                    <Switch />
+                  </Stack>
+                </GridItem>
+
+                <MiniTable
+                  maxHeight={false}
+                  ellipsis
+                  columns={column2}
+                  data={miniData2}
+                  sx={{
+                    container: { border: 'unset !important' },
+                    head: {
+                      '& th': {
+                        color: '#eee',
+                        backgroundColor: '#272C38',
+                        minWidth: '70px',
+                        border: 'unset',
+                      },
+                    },
+                    body: {
+                      '& p': { color: '#dddddd', backgroundColor: 'unset', lineHeight: '20px;' },
+                      '& tr:last-of-type > td': { borderBottom: '1px solid !important' },
+                    },
+                    bodyRow: {
+                      ':hover': { backgroundColor: '#f5f5f521 !important' },
+                      '& div': { height: '20px' },
+                      ':last-of-type > td': { borderBottom: '1px solid #f5f5f547 !important' },
+                    },
+                    bodyCell: {
+                      height: '20px',
+                      maxHeight: '20px',
+                      borderRight: 'unset !important',
+                      borderColor: '#f5f5f547 !important',
+                    },
+                  }}
+                />
+              </MainCard>
+            </GridItem>
+            {/*--------------- 좌측 3/4 번줄 2번째 END------------------------- */}
+          </GridItem>
+        </GridItem>
+        {/*--------------- 좌측 2/3/4 번줄 END------------------------- */}
+
+        {/*--------------- 우측 2/3/4 번줄 System Status Info  START------------------------- */}
+
+        <GridItem item direction="column" xs={4}>
+          <MainCard
+            sx={{
+              background: '#000',
+              borderRadius: '10px',
+              border: 0,
+              mt: 1,
+              color: '#fff',
+              height: '720px',
+            }}
+          >
+            <GridItem item direction="row" justifyContent="space-between" alignItems="baseline">
+              <Typography variant="h6">System Status Info</Typography>
+              <Typography
+                variant="caption"
+                sx={{ color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}
+              >
+                + 더보기
+              </Typography>
+            </GridItem>
+
+            <GridItem item mt={1}>
+              <Box sx={{ background: '#51555E', padding: '2px' }}>
+                <Typography variant="caption" ml={1}>
+                  내부시스템 01
+                </Typography>
+              </Box>
+              <Stack sx={{ mt: 1, height: '145px' }}>
+                <XYChart
+                  id="inSystemChart01"
+                  theme="dark"
+                  sx={{ width: '140px' }}
+                  chartData={{
+                    data: barChartData2,
+                    x: 'date',
+                    seriesData: [
+                      {
+                        label: '반입(kbps)',
+                        y: 'value1',
+                        fill: '#00FFD1',
+                        stroke: '#00FFD1',
+                      },
+                      {
+                        label: '반출(kbps)',
+                        y: 'value2',
+                        fill: '#5A3FFF',
+                        stroke: '#5A3FFF',
+                      },
+                      {
+                        label: '반출(kbps)',
+                        y: 'value3',
+                        fill: '#A9FF3D',
+                        stroke: '#A9FF3D',
+                      },
+                    ],
+                  }}
+                />
+                {/* 좌측 차트랑 테이블 그리고 난 후 작업할것 */}
+                {/* <LineChart
+                  id="internalSystemChart1"
+                  data1={cpu}
+                  data2={trafficExport}
+                  label1="CPU"
+                  label2="Memory"
+                  style={{ height: '135px' }}
+                /> */}
+              </Stack>
+              <Stack sx={{ mt: 1, height: '145px' }}>
+                <XYChart
+                  id="inSystemChart02"
+                  theme="dark"
+                  sx={{ width: '140px' }}
+                  chartData={{
+                    data: barChartData2,
+                    x: 'date',
+                    seriesData: [
+                      {
+                        label: '반입(kbps)',
+                        y: 'value1',
+                        fill: '#00FFD1',
+                        stroke: '#00FFD1',
+                      },
+                      {
+                        label: '반출(kbps)',
+                        y: 'value2',
+                        fill: '#5A3FFF',
+                        stroke: '#5A3FFF',
+                      },
+                      {
+                        label: '반출(kbps)',
+                        y: 'value3',
+                        fill: '#A9FF3D',
+                        stroke: '#A9FF3D',
+                      },
+                    ],
+                  }}
+                />
+                {/* <LineChart
+                  id="internalSystemChart2"
+                  totalData={os}
+                  style={{ height: '135px', width: '100%' }}
+                  labelData={systemLabel}
+                /> */}
+              </Stack>
+            </GridItem>
+            <GridItem item>
+              <Box sx={{ background: '#51555E', padding: '2px' }}>
+                <Typography variant="caption" ml={1}>
+                  외부시스템 01
+                </Typography>
+              </Box>
+              <Stack sx={{ mt: 1, height: '145px' }}>
+                <XYChart
+                  id="exSystemChart01"
+                  theme="dark"
+                  sx={{ width: '140px' }}
+                  chartData={{
+                    data: barChartData2,
+                    x: 'date',
+                    seriesData: [
+                      {
+                        label: '반입(kbps)',
+                        y: 'value1',
+                        fill: '#00FFD1',
+                        stroke: '#00FFD1',
+                      },
+                      {
+                        label: '반출(kbps)',
+                        y: 'value2',
+                        fill: '#5A3FFF',
+                        stroke: '#5A3FFF',
+                      },
+                      {
+                        label: '반출(kbps)',
+                        y: 'value3',
+                        fill: '#A9FF3D',
+                        stroke: '#A9FF3D',
+                      },
+                    ],
+                  }}
+                />
+                {/* <LineChart
+                  id="externalSystemChart1"
+                  data1={cpu}
+                  data2={trafficExport}
+                  label1="CPU"
+                  label2="Memory"
+                  style={{ height: '135px' }}
+                /> */}
+              </Stack>
+              <Stack sx={{ mt: 1, height: '145px' }}>
+                <XYChart
+                  id="exSystemChart02"
+                  theme="dark"
+                  chartData={{
+                    data: barChartData2,
+                    x: 'date',
+                    seriesData: [
+                      {
+                        label: '반입(kbps)',
+                        y: 'value1',
+                        fill: '#00FFD1',
+                        stroke: '#00FFD1',
+                      },
+                      {
+                        label: '반출(kbps)',
+                        y: 'value2',
+                        fill: '#5A3FFF',
+                        stroke: '#5A3FFF',
+                      },
+                      {
+                        label: '반출(kbps)',
+                        y: 'value3',
+                        fill: '#A9FF3D',
+                        stroke: '#A9FF3D',
+                      },
+                    ],
+                  }}
+                />
+                {/* <LineChart
+                  id="externalSystemChart2"
+                  totalData={os}
+                  style={{ height: '135px', width: '100%' }}
+                  labelData={systemLabel}
+                /> */}
+              </Stack>
+            </GridItem>
+          </MainCard>
+        </GridItem>
+      </GridItem>
+      {/*----------------------------------------2/3/4 번줄 END------------------------------------------  */}
+    </GridItem>
+  );
+}
+
+DashboardPopup.getLayout = function getLayout(page) {
+  return (
+    <Layout variant="popup" title="자료 연계 모니터링" isDashboard>
+      {page}
+    </Layout>
+  );
+};
+
+export default DashboardPopup;

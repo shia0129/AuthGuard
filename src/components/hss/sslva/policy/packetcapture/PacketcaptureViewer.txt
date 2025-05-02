@@ -1,0 +1,34 @@
+// pages/PacketViewer.jsx
+import React, { useState } from 'react';
+import { Box, Grid } from '@mui/material';
+//import PacketcaptureListTable from './PacketcaptureListTable';
+//import PacketDetailTree from './PacketDetailTree';
+//import PacketHexViewer from './PacketHexViewer';
+import PacketcaptureListTable from '@components/hss/sslva/policy/packetcapture/PacketcaptureListTable';
+import PacketcaptureDetail from '@components/hss/sslva/policy/packetcapture/PacketcaptureDetail';
+import PacketcaptureHexViewer from '@components/hss/sslva/policy/packetcapture/PacketcaptureViewer';
+
+
+export default function PacketcaptureViewer({ packets }) {
+  const [selectedPacket, setSelectedPacket] = useState(null);
+
+  return (
+    <Box p={2}>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <PacketcaptureListTable packets={packets} onSelect={setSelectedPacket} />
+        </Grid>
+        {selectedPacket && (
+          <>
+            <Grid item xs={12}>
+              <PacketcaptureDetail packet={selectedPacket} />
+            </Grid>
+            <Grid item xs={12}>
+              <PacketcaptureHexViewer packet={selectedPacket} />
+            </Grid>
+          </>
+        )}
+      </Grid>
+    </Box>
+  );
+}

@@ -1,0 +1,196 @@
+next.js 업그레이드 시 수정한 파일은 다음과 같음.
+
+1. SizeMe 패키지 제거 및 관련 소스 수정
+	- src\components\modules\table\ReactTable.jsx
+	- src\components\modules\table\HsReactTable\RowContent.jsx
+2. NDP-frontend\src\pages\_app.jsx
+	-import 'simplebar/src/simplebar.css'; --> import 'simplebar-react/dist/simplebar.min.css'; 변경
+	- 해당 소스 전체 수정... 4번 문제와 관련..
+3. ReferenceError: Cannot access 'anchorEl' before initialization
+	- src\components\layouts\MainLayout\Drawer\DrawerContent\Navigation\NavItem.jsx
+	- 소스 수정 전
+  let listItemProps = useMemo(() => {
+    return {
+      component: forwardRef(function listItemProps(props, ref) {
+        return (
+          <NextLink href={item.url} passHref>
+            <Link
+              {...props}
+              {...(!drawerOpen && { onMouseEnter: handleClick, onMouseLeave: handleClose })}
+              onClick={handleClick}
+              target={itemTarget}
+              ref={ref}
+            />
+          </NextLink>
+        );
+      }),
+    };
+  }, [drawerOpen, anchorEl]);
+	- 소스 수정 후
+4. TypeError: Cannot assign to read only property 'theme' of object '#<Object>'
+   에러 원인으로는 theme가 읽기 전용인데.. 직접적으로 수정을 시도하여 발생.
+	- src\pages\_app.jsx 
+            - src\components\modules\common\ConfirmAlert.jsx  
+	- src\components\modules\button\LoadingButton.jsx
+	- src\components\modules\table\MiniTable\index.jsx
+	- src\components\layouts\MainLayout\Drawer\DrawerHeader\index.jsx
+	- src\components\@extended\IconButton.jsx
+
+5. RestFull API 호출시 중간에 "취소"가 될경우 3번 재시도
+	- src\api\hss\common\accountManage\accountApi.js
+	- src\api\hss\common\accountManage\accountGroupApi.js
+	- src\api\hss\common\logManage\logApi.js
+	- src\api\hss\common\networkManage\interfaceApi.js
+	- src\api\hss\common\systemManage\dashboardApi.js
+	- src\api\hss\common\systemManage\licenseApi.js
+	- src\api\hss\common\systemManage\powerApi.js
+	- src\api\hss\common\systemManage\versionApi.js
+	- src\api\hss\sslswg\policy\policyDefaultManage\blackListGroupStatusApi.js
+	- src\api\hss\sslswg\policy\policyDetailManage\patternGroupStatusApi.js
+	- src\api\hss\sslswg\policy\policyDetailManage\siteStatusApi.js
+	- src\api\hss\sslswg\policy\policyDetailManage\srcIpGroupStatusApi.js
+	- src\api\hss\sslswg\policy\policyDetailManage\srcIpStatusApi.js
+	- src\api\hss\sslswg\policy\policyDetailManage\timeGroupStatusApi.js
+	- src\api\hss\sslswg\policy\policyDetailManage\timeStatusApi.js
+	- src\api\hss\sslswg\policy\policyDetailStatusApi.js
+	- src\api\hss\sslswg\policy\policyGroupStatusApi.js
+	- src\api\hss\sslva\policy\policyDetailStatusApi.js
+	- src\api\hss\sslva\policy\policyGroupStatusApi.js
+	- src\api\hss\sslva\policy\protocolStatusApi.js
+	- src\api\hss\sslva\policy\segmentStatusApi.js
+	- src\api\hss\sslvpn\userApi.js
+	- src\api\hss\sslvpn\zoneApi.js
+	- src\modules\common\HsLib.js
+
+6. 다음과 같은 에러는 화면 초기에 useEffect()가 두번 호출되어 발생되는 에러들임.
+       * Error fetching data: TypeError: data.map is not a function
+        [ 경우에 따라서 "if (Array.isArray(data)) "로 예외처리 필요 ]
+       * 브라우저 콘솔에 "Error canceled" 메시지 발생시에도 해당함.
+	- src\pages\hss\systemManage\dashboardManage\index.jsx
+   	- src\components\third-party\react-hook-form\ValidateInput.jsx
+	- src\components\hss\common\accountManage\account\index.jsx
+	- src\components\hss\common\accountManage\accountGroup\index.jsx
+	- src\components\modal\hss\common\accountManage\accountGroupModal.jsx
+	- src\components\modal\hss\common\accountManage\accountModal.jsx
+	- src\components\hss\sslswg\policy\policyDetailManage\patternGroupStatus\update\index.jsx
+	- src\components\hss\sslswg\policy\policyDefaultManage\blackListStatus\index.jsx
+	- src\components\hss\sslswg\policy\policyDefaultManage\blackListGroupStatus\index.jsx
+	- src\pages\hss\networkManage\interfaceManage\index.jsx
+	- src\modules\utils\route-guard\PermissionGuard.js
+	- src\components\@extended\Breadcrumbs.jsx  ????? 
+
+7 .Warning: A props object containing a "key" prop is being spread into JSX:
+  	let props = {key: someKey, className: ..., role: ..., style: ..., sx: ..., height: ..., children: ...};
+	  <ForwardRef(TableRow) {...props} />
+	React keys must be passed directly to JSX without using spread:
+	  let props = {className: ..., role: ..., style: ..., sx: ..., height: ..., children: ...};
+	  <ForwardRef(TableRow) key={someKey} {...props} /> Error Component Stack
+       * 경고 인데.. 보기 싫어서리..
+	- src\components\modules\table\HsReactTable\TableHeader.jsx
+	- src\components\modules\table\HsReactTable\TableHeaders.jsx
+	- src\components\modules\table\HsReactTable\index.jsx
+	- src\components\modules\table\HsReactTable\RowContent.jsx
+	- src\components\modules\table\ReactRow.jsx
+
+8. Warning: findDOMNode is deprecated and will be removed in the next major release. Instead, add a ref directly to the element you want to reference. Learn more about using refs safely here: https://reactjs.org/link/strict-mode-find-node Error Component Stack
+
+
+
+
+
+
+ERROR Message :  TypeError: Cannot assign to read only property 'theme'
+    1. src/components/modules/common/ConfirmAlert.jsx
+    2. src/components/modules/button/LoadingButton.jsx
+    3. src/components/modules/table/Minitable/index.jsx
+    4. src/components/layouts/MainLayout/Drawer/DrawerHeader/index.jsx
+    5. src/components/@extended/IconButton.jsx
+
+    [ 원인으로는 theme가 읽기 전용인데.. 직접적으로 수정을 시도하여 발생. ]
+      이외에 다른 파일에서 문제가 발생할 소지가 있음.
+
+next.config.js에서 환경설정 nextConfig_dev에 reactStrictMode: true로 설정시 다음과 같은 문제 발생
+  - 파일마다 useEffect()를 사용하는 부분에서 두번씩 호출하는 문제 발생. 이는 디버깅을 위한 옵션이라고함.
+  - 해당 useEffect()에서 apicall 같은 Restfull API를 호출하고 cache에 저장하는 부분이 있는 경우 cache가 정상적으로 저장안됨.
+     이유는 axios에서 두번째 호출 때문에 중간에 통신 시도를 안함.
+  - 그래서 첫번째 useEffect() 호출을 무시하는 코드가 들어가야함.
+  - 또다른 해결책은 next.config.js의 nextConfig_dev에 reactStrictMode를 false로 변경하면 두번씩 호출은 안하지만
+     CSRF에러가 발생함.( 이건 해결책이 아님.. )
+  - 수정한 파일 목록
+    1. src/modules/utils/route-guard/Permissionguard.js
+       * isMountedRef.current = true;
+       * const controller = new AbortController();
+       * const signal = controller.signal;
+    2. src/pages/hss/systemManage/dashboardManage/index.jsx
+       * if (isFirstRender.current) {
+       *   isFirstRender.current = false;
+       *   return;
+       * }
+       *  // Strict Mode가 아닐 때 두 번째 실행 방지
+       * if (!isSecondCallAllowed.current) return;
+       * const controller = new AbortController();
+       * const signal = controller.signal;
+    3.src\pages\hss\networkManage\interfaceManage\index.jsx
+    
+    - 수정되는 코드는 소스 구성에 따라 약간씩 차이가 있음.
+    
+NaviItem.jsx에서 anchorEl prop provided to the component is invalid.에러 발생
+    1. anchorEl이 null이거나 display: none; 상태에 있을 때 발생
+    - 파일 수정 src\components\layouts\MainLayout\Drawer\DrawerContent\Navigation\NavItem.jsx
+
+에러 메시지 
+ [ Uncaught Error: Maximum update depth exceeded. 
+   This can happen when a component repeatedly calls setState inside componentWillUpdate or componentDidUpdate. 
+   React limits the number of nested updates to prevent infinite loops.]
+ 이와 같은 에러 발생시 useEffect()가 두번씩 호출되어 무한루프에 빠져서 발생함.
+ - 파일 수정 src\pages\hss\networkManage\interfaceManage\index.jsx
+ - 추가적으로 
+
+에러 메시지
+ 1. [Warning: A props object containing a "key" prop is being spread into JSX:
+  let props = {key: someKey, className: ..., context: ..., data-index: ..., data-item-index: ..., data-known-size: ..., style: ..., height: ..., role: ..., sx: ..., children: ...};
+  <ForwardRef(TableRow) {...props} />
+  React keys must be passed directly to JSX without using spread:
+  let props = {className: ..., context: ..., data-index: ..., data-item-index: ..., data-known-size: ..., style: ..., height: ..., role: ..., sx: ..., children: ...};
+  <ForwardRef(TableRow) key={someKey} {...props} /> Error Component Stack]
+
+  2. [Warning: findDOMNode is deprecated in StrictMode. findDOMNode was passed an instance of SizeMeReferenceWrapper which is inside StrictMode. Instead, add a ref directly to the element you want to reference. Learn more about using refs safely here: ]
+    - 소스 수정 react-sizeme에서 사용되는 테그 <SIZEME></SIZEME> 삭제 및 대체 코드로 수정.
+
+  3.[ Error: <DraggableCore> not mounted on DragStart!  at DraggableCore.eval ]
+    -소스 수정 src\components\modules\common\PopUp.jsx
+     function PaperComponent(props) {
+      const draggableRef = useRef(null);
+      return (
+         <Draggable
+            nodeRef={draggableRef}
+            handle="#draggable-dialog-title"
+            cancel={'[class*="MuiDialogContent-root"]'}
+            defaultPosition={{ x: 0, y: 0 }}
+            bounds="parent"
+         >
+            <Paper ref={draggableRef} {...props} sx={{ transform: 'none' }} /> 
+         </Draggable>
+      );
+      }
+     
+
+
+
+table에서 리스트 안나오는 문제가
+   1. src\components\modules\table\HsReactTable\index.jsx
+      수정 전 :
+        {children.find((child) => child != null) ? (
+          children
+        ) : (
+          <TableRowNoData colSpan={flatHeaders.length} message={'데이터가 존재하지 않습니다.'} />
+        )}
+
+      수정 후:
+        {children.some((child) => child != null) ? (
+          children
+        ) : (
+          <TableRowNoData colSpan={flatHeaders.length} message={'데이터가 존재하지 않습니다.'} />
+        )}
+   2. src\components\hss\common\networkManage\interface\interfaceTable.jsx
+      디버깅을 위한 코드 수정

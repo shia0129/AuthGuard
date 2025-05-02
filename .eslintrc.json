@@ -1,0 +1,39 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "next/core-web-vitals",
+    "plugin:react/jsx-runtime",
+    "plugin:prettier/recommended",
+    "plugin:security/recommended"
+  ],
+  "rules": {
+    "no-var": "warn",
+    "no-unused-vars": "warn",
+    "prettier/prettier": [
+      "warn",
+      {
+        "endOfLine": "auto"
+      }
+    ],
+    // Airbnb React/JSX Style Guide
+    "react/jsx-pascal-case": "warn",
+    "react/jsx-closing-bracket-location": "warn",
+    "jsx-quotes": "warn",
+    "react/jsx-curly-spacing": "warn",
+    "react/jsx-boolean-value": "warn",
+    "react/no-string-refs": "warn",
+    "react/self-closing-comp": "warn",
+    "react-hooks/exhaustive-deps": "off"
+  },
+  "env": {
+    "es6": true,
+    "es2020": true
+  },
+  "settings": {
+    "import/resolver": {
+      "jsconfig": {
+        "config": "jsconfig.json"
+      }
+    }
+  }
+}

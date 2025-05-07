@@ -168,6 +168,7 @@ function PolicyGroupStatusModal(props) {
                   maxWidth: '200px !important',
                   minWidth: '200px !important',
                 },
+                '.MuiBox-root': { padding: '6px !important' },
               }}
             >
               <LabelInput

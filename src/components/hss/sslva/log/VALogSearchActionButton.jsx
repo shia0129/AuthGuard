@@ -67,7 +67,8 @@ function VALogSearchActionButton(props) {
             {
               label: `설명 ${showDesc ? '숨기기' : '보기'}`,
               callBack: () => setShowDesc((prev) => !prev),
-              variant: 'outlined',
+              color: showDesc ? 'secondary' : 'success',
+              variant: 'contained',
             },
           ]}
         />
@@ -76,7 +77,8 @@ function VALogSearchActionButton(props) {
             {
               label: '조회',
               callBack: () => inquiryClickButton(),
-              variant: 'outlined',
+              color: 'primary',
+              variant: 'contained',
             },
           ]}
         />

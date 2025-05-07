@@ -9,7 +9,6 @@ import { setParameters } from '@modules/redux/reducers/hss/sslva/packetcaptureSt
 import { ConsoleView } from 'react-device-detect';
 
 function PacketcaptureActionButton(props) {
-
   // const { onSearchButtonClick, onDeleteButtonClick } = props;
   const { onStartButtonClick } = props;
   const dispatch = useDispatch();
@@ -28,33 +27,31 @@ function PacketcaptureActionButton(props) {
     // 입력값 검사.............
     // console.log(parameterData.parameters.current);
     onStartButtonClick(parameterData.parameters.current);
-    
   };
 
   return (
     <>
-      <GridItem item directionHorizon="start">
-        <Stack direction="row" alignItems="center" spacing={1.25}>
-          <ButtonSet
-            options={[
-              {
-                label: '시작',
-                callBack: () => startClickButton(),
-                variant: 'outlined',
-              },
-              // {
-              //   label: '추가',
-              //   callBack: handleInsertButtonClick,
-              //   variant: 'outlined',
-              // },
-              // {
-              //   label: '삭제',
-              //   callBack: onDeleteButtonClick,
-              //   variant: 'outlined',
-              // },
-            ]}
-          />
-        </Stack>
+      <GridItem item directionHorizon="end">
+        <ButtonSet
+          options={[
+            {
+              label: '시작',
+              callBack: () => startClickButton(),
+              color: 'primary',
+              variant: 'contained',
+            },
+            // {
+            //   label: '추가',
+            //   callBack: handleInsertButtonClick,
+            //   variant: 'outlined',
+            // },
+            // {
+            //   label: '삭제',
+            //   callBack: onDeleteButtonClick,
+            //   variant: 'outlined',
+            // },
+          ]}
+        />
       </GridItem>
       {/* {modalOpen && (
         <CertStatusModal

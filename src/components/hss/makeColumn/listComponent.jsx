@@ -49,7 +49,7 @@ function ListComponent({ data, list = [] }) {
           >
             {item.name}
           </Button> */}
-          <Chip variant="light" color="success" size="small" label={item.name} />
+          <Chip variant="light" color="primary" size="small" label={item.name} />
         </Stack>
       ))}
     </GridItem>

@@ -54,7 +54,10 @@ const Default = (colors, mode) => {
   let errorColors = ['#FFE7D3', '#FF805D', '#FF4528', '#DB271D', '#930C1A'];
   let warningColors = ['#FFF6D0', '#FFCF4E', '#FFB814', '#DB970E', '#935B06'];
   let infoColors = ['#DCF0FF', '#7EB9FF', '#549BFF', '#3D78DB', '#1A3D93'];
-  let successColors = ['#EAFCD4', '#8AE65B', '#58D62A', '#3DB81E', '#137C0D'];
+  // let infoColors = ['#DCF0FF', '#7EB9FF', '#61b2ac', '#3D78DB', '#1A3D93'];
+
+  // let successColors = ['#EAFCD4', '#8AE65B', '#58D62A', '#3DB81E', '#137C0D'];
+  let successColors = ['#EAFCD4', '#8AE65B', '#61b2ac', '#3c8b84', '#137C0D'];
   if (mode === 'dark') {
     primaryColors = [
       '#1c2134',
@@ -102,7 +105,7 @@ const Default = (colors, mode) => {
       A100: greyColors[0],
       A200: greyColors.A400,
       A300: greyColors.A700,
-      contrastText: greyColors[0]
+      contrastText: greyColors[0],
     },
     error: {
       lighter: errorColors[0],
@@ -110,7 +113,7 @@ const Default = (colors, mode) => {
       main: errorColors[2],
       dark: errorColors[3],
       darker: errorColors[4],
-      contrastText
+      contrastText,
     },
     warning: {
       lighter: warningColors[0],
@@ -118,7 +121,7 @@ const Default = (colors, mode) => {
       main: warningColors[2],
       dark: warningColors[3],
       darker: warningColors[4],
-      contrastText: greyColors[100]
+      contrastText: greyColors[100],
     },
     info: {
       lighter: infoColors[0],
@@ -126,7 +129,7 @@ const Default = (colors, mode) => {
       main: infoColors[2],
       dark: infoColors[3],
       darker: infoColors[4],
-      contrastText
+      contrastText,
     },
     success: {
       lighter: successColors[0],
@@ -134,11 +137,10 @@ const Default = (colors, mode) => {
       main: successColors[2],
       dark: successColors[3],
       darker: successColors[4],
-      contrastText
+      contrastText,
     },
-    grey: greyColors
+    grey: greyColors,
   };
 };
-
 
 export default Default;

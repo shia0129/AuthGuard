@@ -46,7 +46,7 @@ function PolicyGroupStatusActionButton(props) {
             {
               label: '추가',
               callBack: handleInsertButtonClick,
-              color: 'primary',
+              color: 'success',
               variant: 'contained',
             },
             {

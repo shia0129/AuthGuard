@@ -38,7 +38,9 @@ const Breadcrumbs = ({
   const [main, setMain] = useState([]);
   const [item, setItem] = useState(null);
 
-  const { menuItem: { items } } = useSelector((state) => state.menu);
+  const {
+    menuItem: { items },
+  } = useSelector((state) => state.menu);
   const { fullSizeFlag, onChangeFullSizeFlag } = useConfig();
 
   const currentPath = router.pathname;
@@ -46,14 +48,18 @@ const Breadcrumbs = ({
   const getCollapse = (menu, mainArr = []) => {
     try {
       const urlList = menu.url.split('/').filter((url) => url);
-      const sameEl = menu.url.split('/').filter((url) => url && currentPath.split('/').includes(url));
+      const sameEl = menu.url
+        .split('/')
+        .filter((url) => url && currentPath.split('/').includes(url));
 
       if (sameEl.length === urlList.length) mainArr.push(menu);
 
       if (menu.children) {
         menu.children.forEach((child) => {
           const urlList = child.url.split('/').filter((url) => url);
-          const sameEl = child.url.split('/').filter((url) => url && currentPath.split('/').includes(url));
+          const sameEl = child.url
+            .split('/')
+            .filter((url) => url && currentPath.split('/').includes(url));
 
           if (child.type === 'collapse') {
             getCollapse(child, mainArr);
@@ -80,17 +86,18 @@ const Breadcrumbs = ({
         dispatch(setSelectedCollapse({ selectedCollapse: mainArr[0].url }));
       }
     } catch (error) {
-      console.error("Breadcrumbs 오류 발생:", error);
+      console.error('Breadcrumbs 오류 발생:', error);
     }
   };
   const useEffect_0001 = useRef(false);
   const useEffect_0002 = useRef(false);
   useEffect(() => {
-   if (process.env.NODE_ENV === 'development') {  //process.env.NODE_ENV === 'development'
-      if (!useEffect_0001.current){
+    if (process.env.NODE_ENV === 'development') {
+      //process.env.NODE_ENV === 'development'
+      if (!useEffect_0001.current) {
         useEffect_0001.current = true;
-        return; 
-      } 
+        return;
+      }
     }
     isMountedRef.current = true;
     setMain([]);
@@ -98,11 +105,12 @@ const Breadcrumbs = ({
   }, [currentPath]);
 
   useEffect(() => {
-   if (process.env.NODE_ENV === 'development') {  //process.env.NODE_ENV === 'development'
-      if (!useEffect_0002.current){
+    if (process.env.NODE_ENV === 'development') {
+      //process.env.NODE_ENV === 'development'
+      if (!useEffect_0002.current) {
         useEffect_0002.current = true;
-        return; 
-      } 
+        return;
+      }
     }
     if (!isMountedRef.current) return;
     try {
@@ -110,7 +118,7 @@ const Breadcrumbs = ({
         items.forEach((menu) => getCollapse(menu));
       }
     } catch (error) {
-      console.error("useEffect 실행 중 오류 발생:", error);
+      console.error('useEffect 실행 중 오류 발생:', error);
     }
   }, [currentPath, items]);
 
@@ -123,7 +131,12 @@ const Breadcrumbs = ({
   );
 
   let mainContent = main.map((depth) => (
-    <Typography key={depth.menuCode} variant="h6" sx={{ textDecoration: 'none' }} color="textSecondary">
+    <Typography
+      key={depth.menuCode}
+      variant="h6"
+      sx={{ textDecoration: 'none' }}
+      color="textSecondary"
+    >
       {depth.label}
     </Typography>
   ));
@@ -147,19 +160,31 @@ const Breadcrumbs = ({
       content={card}
       shadow="none"
     >
-      <Grid container direction={rightAlign ? 'row' : 'column'} justifyContent={rightAlign ? 'space-between' : 'flex-start'} alignItems={rightAlign ? 'center' : 'flex-start'} spacing={1}>
+      <Grid
+        container
+        direction={rightAlign ? 'row' : 'column'}
+        justifyContent={rightAlign ? 'space-between' : 'flex-start'}
+        alignItems={rightAlign ? 'center' : 'flex-start'}
+        spacing={1}
+      >
         {title && !titleBottom && (
           <Grid item xs={6}>
             <Stack spacing={1} direction="row">
-              {ItemIcon ? <ItemIcon /> : null}
-              <Typography variant="h2">{itemTitle}</Typography>
+              {/* {ItemIcon ? <ItemIcon /> : null} */}
+              <Typography variant="h2" sx={{}}>
+                {itemTitle}
+              </Typography>
             </Stack>
           </Grid>
         )}
         <Grid xs={6} item container justifyContent="flex-end" alignItems="center">
           <Grid item>
             <Stack direction="row" spacing={2}>
-              <MuiBreadcrumbs aria-label="breadcrumb" maxItems={maxItems || 8} separator={separatorIcon}>
+              <MuiBreadcrumbs
+                aria-label="breadcrumb"
+                maxItems={maxItems || 8}
+                separator={separatorIcon}
+              >
                 {mainContent}
                 {itemContent}
               </MuiBreadcrumbs>
@@ -169,7 +194,11 @@ const Breadcrumbs = ({
                 sx={{ height: '20px', width: '20px' }}
                 onClick={() => onChangeFullSizeFlag(!fullSizeFlag)}
               >
-                {fullSizeFlag ? <FullscreenIcon fontSize="small" /> : <FullscreenExitIcon fontSize="small" />}
+                {fullSizeFlag ? (
+                  <FullscreenIcon fontSize="small" />
+                ) : (
+                  <FullscreenExitIcon fontSize="small" />
+                )}
               </IconButton>
             </Stack>
           </Grid>

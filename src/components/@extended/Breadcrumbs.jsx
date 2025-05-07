@@ -171,9 +171,7 @@ const Breadcrumbs = ({
           <Grid item xs={6}>
             <Stack spacing={1} direction="row">
               {/* {ItemIcon ? <ItemIcon /> : null} */}
-              <Typography variant="h2" sx={{}}>
-                {itemTitle}
-              </Typography>
+              <Typography variant="h2">{itemTitle}</Typography>
             </Stack>
           </Grid>
         )}
